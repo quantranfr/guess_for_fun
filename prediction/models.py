@@ -1,7 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.conf import settings
-from datetime import datetime
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Team(models.Model):
     abbr = models.CharField(default=None, max_length=10)
@@ -10,11 +10,13 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
+
 class Championship(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
 
 class Match(models.Model):
     championship = models.ForeignKey(
@@ -45,40 +47,28 @@ class Match(models.Model):
     def __str__(self):
         return f'{self.team_1.name} vs. {self.team_2.name} at {self.start_time}'
 
+
 class Clan(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
-class User(AbstractUser):
-    clan = models.ForeignKey(
-        Clan,
-        null=True,
-        on_delete=models.SET_NULL
-    )
 
-    def __str__(self):
-        return self.email
-
-
-class User_Championship(models.Model):
-    championship = models.ForeignKey(
-        Championship,
-        on_delete=models.CASCADE
-    )
+class User_Clan(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
     )
-
-    def __str__(self):
-        return self.user.email + ': ' + self.championship.name
+    clan = models.ForeignKey(
+        Clan,
+        on_delete=models.CASCADE,
+    )
 
 
 class Prediction(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
     )
     match = models.ForeignKey(
