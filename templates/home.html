@@ -1,13 +1,19 @@
 <!-- templates/home.html -->
 {% extends 'base.html' %}
 
+{% block header %}{% endblock %}
+
 {% block content %}
-  Let's participate into a guessing competition between friends.
+  <h1>Guess For Fun</h1>
+  <p>Welcome to the friendliest platform of sport prediction, legit and fun.<p>
+
 {% if user.is_authenticated %}
-  <p><a href="{% url 'prediction:index' %}">Let's guess</a></p>
+  <p>You are logged in as <strong>{{ user }}</strong>.</p>
+  <p><a href="{% url 'prediction:index' %}">Guess hub</a></p>
   <p><a href="{% url 'logout' %}">Log Out</a></p>
+
 {% else %}
-  <p>You are not logged in</p>
+  <p>Spice up your summer: Euro 2021 is here!</p>
   <a href="{% url 'login' %}">Log In</a>
   <p>
   <a href="{% url 'signup' %}">Sign Up</a>

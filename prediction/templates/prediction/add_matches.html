@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Add matches to database</h2>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p> Choose from a list of championships:<br />
+    <select name="dropdown_championship" class="form-control">
+      {% for c in championships %}
+      <option value="{{c}}">{{c}}</option>
+      {% endfor %}
+    </select><br />
+    or create a new one:<br />
+    <input type="text" name="input_championship" value={{default_championship}}>
+
+    <p>
+    <input type="file" name="file" id="file" accept=".csv"><br />
+    NB: {{instruction}}
+    <p>
+    <input type="submit" value="Upload">
+  </form>
+
+{% endblock %}

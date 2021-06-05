@@ -5,6 +5,6 @@ from . import views
 app_name = 'prediction'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('upload-team', views.upload_team, name='upload_team'),
-    path('upload-match', views.upload_match, name='upload_match'),
+    path('add-teams', views.add_teams, name='add_teams'),
+    path('add-matches', views.add_matches, name='add_matches'),
 ]

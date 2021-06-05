@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h3>Add teams to the database</h3>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p> Instruction: {{instruction}}
+    <br />
+    <input type="file" name="file" id="file" accept=".csv">
+    <p>
+    <input type="submit" value="Upload">
+  </form>
+
+{% endblock %}
