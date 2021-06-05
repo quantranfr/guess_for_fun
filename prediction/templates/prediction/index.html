@@ -6,20 +6,20 @@
   </head>
   <body>
 
-  <form action="{% url 'prediction:predict' user %}" method="post">
+  <form method="post">
     {% csrf_token %}
     <ul>
     {% for match in matches %}
     <li>
-	{{match.start_time}}
-	{{match.team_1}}
-	<input type=text id="{{match.id}}-1" value="{{match.predicted_score_1}}" {% if match.locked %}readonly{% endif %}>
-	-
-	<input type=text id="{{match.id}}-2" value="{{match.predicted_score_2}}" {% if match.locked %}readonly{% endif %}>
-	{{match.team_2}}
-	{% if match.real_score_1 %}
-	(real score: {{match.real_score_1}}-{{match.real_score_2}})
-	{% endif %}
+	    {{match.start_time}}
+    	{{match.team_1}}
+    	<input type=text name="{{match.id}}-1" value="{{match.predicted_score_1}}" {% if match.locked %}readonly{% endif %}>
+    	-
+    	<input type=text name="{{match.id}}-2" value="{{match.predicted_score_2}}" {% if match.locked %}readonly{% endif %}>
+    	{{match.team_2}}
+    	{% if match.real_score_1 %}
+    	(real score: {{match.real_score_1}}-{{match.real_score_2}})
+    	{% endif %}
     </li>
     {% endfor %}
     </ul>

@@ -4,25 +4,26 @@ from django.conf import settings
 from datetime import datetime
 
 class Team(models.Model):
-    id = models.CharField(primary_key=True, max_length=20)
-    name = models.CharField(max_length=200)
-    group = models.CharField(max_length=200, blank=True)
-    
+    abbr = models.CharField(default=None, max_length=10)
+    name = models.CharField(default=None, max_length=200)
+
     def __str__(self):
         return self.name
 
 class Championship(models.Model):
     name = models.CharField(max_length=200)
-    
+
     def __str__(self):
         return self.name
-    
+
 class Match(models.Model):
     championship = models.ForeignKey(
         Championship,
         null=True,
         on_delete=models.SET_NULL
     )
+    phase = models.CharField(default=None, max_length=200)
+    group = models.CharField(default=None, max_length=200)
     team_1 = models.ForeignKey(
         Team,
         related_name='team_1',
@@ -88,3 +89,6 @@ class Prediction(models.Model):
     main_score_2 = models.IntegerField(default=None, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user}\t{self.match}\t{self.main_score_1}-{self.main_score_2}'

@@ -1,0 +1,13 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  Let's participate into a guessing competition between friends.
+{% if user.is_authenticated %}
+  <p><a href="{% url 'prediction:index' %}">Let's guess</a></p>
+  <p><a href="{% url 'logout' %}">Log Out</a></p>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">Log In</a>
+{% endif %}
+{% endblock %}

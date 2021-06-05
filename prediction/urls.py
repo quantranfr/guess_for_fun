@@ -5,5 +5,6 @@ from . import views
 app_name = 'prediction'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('predict/<str:user>', views.predict, name='predict'),
+    path('upload-team', views.upload_team, name='upload_team'),
+    path('upload-match', views.upload_match, name='upload_match'),
 ]
