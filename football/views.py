@@ -54,7 +54,7 @@ def index(request):
     # display matches and user's predictions
     context['matches'] = _display_matches(request.user)
 
-    return render(request, 'prediction/index.html', context)
+    return render(request, 'football/index.html', context)
 
 @login_required
 def clan(request, clan_id):
@@ -71,7 +71,7 @@ def clan(request, clan_id):
         'clan': c,
         'username_pts_rank': username_pts_rank
     }
-    return render(request, 'prediction/clan.html', context)
+    return render(request, 'football/clan.html', context)
 
 @permission_required('is_superuser')
 def add_teams(request):
@@ -83,7 +83,7 @@ def add_teams(request):
     Columns: 'name' (eg. France), 'abbr' (eg. FRA)
     '''
 
-    template = "prediction/add_teams.html"
+    template = "football/add_teams.html"
     context = {
         'instruction': "Accept ';' separated csv file.\
             Contains two columns 'name' and 'abbr' with header."
@@ -122,7 +122,7 @@ def add_matches(request):
     Columns: UTC_diff (eg.2);phase (eg.group);group (eg.A);start_time (eg.11-06-2021 21:00);team_1 (eg.France);team_2 (eg.Italy)
     '''
 
-    template = "prediction/add_matches.html"
+    template = "football/add_matches.html"
     championships = Championship.objects.all()
     context = {
         'default_championship': '' if len(championships) else 'default_' + str(int(datetime.now().timestamp())),

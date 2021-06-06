@@ -1,5 +1,5 @@
 """
-WSGI config for euro2021 project.
+WSGI config for guess_for_fun project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'euro2021.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'guess_for_fun.settings')
 
 application = get_wsgi_application()

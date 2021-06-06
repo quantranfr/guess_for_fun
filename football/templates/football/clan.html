@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <a href="{% url 'prediction:index' %}">&lt; Guess hub</a>
+  <a href="{% url 'football:index' %}">&lt; Guess hub</a>
 {% endblock %}
 
 {% block content %}
@@ -25,7 +25,7 @@
 
   <hr />
 
-  <form action="{% url 'prediction:index' %}" method="POST">
+  <form action="{% url 'football:index' %}" method="POST">
     {% csrf_token %}
     {% if username_pts_rank|length == 1 %}
       <div class="alert alert-warning">You are the last one, leaving the clan will lead to its suppression.</div>
