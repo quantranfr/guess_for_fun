@@ -4,8 +4,34 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-  <h1>Guess For Fun</h1>
-  <p>Welcome to the friendliest platform of sport prediction, legit and fun.<p>
+
+
+  <div class="jumbotron">
+    <h1>Guess For Fun</h1>
+    <p>Welcome to the friendliest platform of sport prediction, legit and fun.<p>
+    <p>Now on air: Euro 2021!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">How to gain points</h5>
+      <div class="card-text">
+        For each match, you have:
+        <p></p>
+        <table class="table table-borderless">
+          <tr><td class="badge badge-info">8 pts</td><td>for the right <strong>winner</strong> and the <strong>2 scores</strong>.</td></tr>
+          <tr><td class="badge badge-info">5 pts</td><td>for the right <strong>winner</strong> and the <strong>goal difference</strong> (or a <strong>draw</strong>).</td></tr>
+          <tr><td class="badge badge-info">4 pts</td><td>for the right <strong>winner</strong> and <strong>1 score</strong>.</td></tr>
+          <tr><td class="badge badge-info">3 pts</td><td>for just the right <strong>winner</strong>.</td></tr>
+          <tr><td colspan=2>Double the points for play-off matches. Penalty shoot-out doesn't count.</td></tr>
+        </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p></p>
 
 {% if user.is_authenticated %}
   <p>You are logged in as <strong>{{ user }}</strong>.</p>
@@ -13,8 +39,8 @@
   <p><a href="{% url 'logout' %}" class='btn btn-danger'>Log Out</a></p>
 
 {% else %}
-  <p>Spice up your summer: Euro 2021 is here!</p>
   <a href="{% url 'login' %}" class='btn btn-primary'>Log In</a>
   <a href="{% url 'signup' %}" class='btn btn-primary'>Sign Up</a>
+  <a href="{% url 'football:index' %}" class='btn btn-success'>Take a tour</a>
 {% endif %}
 {% endblock %}

@@ -3,6 +3,13 @@
 {% block content %}
   <h1>Guess hub</h1>
 
+  {% if not user.is_authenticated %}
+  <div class="alert alert-warning">
+    You are not logged in and are not allowed to do any action.<br />
+    <a href="{% url 'login' %}" class='btn btn-primary'>Log In</a>
+  </div>
+  {% endif %}
+
   {% if join_clan_feedback %}
   <div class="alert {{ join_clan_feedback.1 }}">{{ join_clan_feedback.0 }}</div>
   {% endif %}
@@ -13,49 +20,45 @@
   <div class="alert {{ submit_guesses_feedback.1 }}">{{ submit_guesses_feedback.0 }}</div>
   {% endif %}
 
-  <h3>Your rank</h3>
-  <p>You've got <strong>{{ points }}</strong> points.</p>
-
-  {% if uclans %}
-    <p>Click on one of your clans to see the ranking:</p>
-    <div class="list-group" style="width:300px">
-      {% for uc in uclans %}
-        <a href="{% url 'football:clan' uc.clan.id %}" class="list-group-item list-group-item-action">{{ uc.clan }}</a>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p>No clan (ie. friend group) found,
-      but you can still make predictions now. Create or join a clan at the bottom of the page.
-    </p>
+  {% if user.is_authenticated %}
+    <h3>Your rank</h3>
+    <p>You've got <strong>{{ points }}</strong> points.</p>
+    {% if uclans %}
+      <p>Click on one of your clans to see the ranking:</p>
+      <div class="list-group" style="width:300px">
+        {% for uc in uclans %}
+          <a href="{% url 'football:clan' uc.clan.id %}" class="list-group-item list-group-item-action">{{ uc.clan }}</a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No clan (ie. friend group) found,
+        but you can still make predictions now. Create or join a clan at the bottom of the page.
+      </p>
+    {% endif %}
+    <hr />
   {% endif %}
 
-  <hr />
-
   <h3>Your guesses</h3>
-  <p>Predictions can be modified until the 15th minutes of the corresponding matches.</p>
-  <div class="alert alert-info">Tip: Watch the beginning of each match to maximize your chance. And don't forget to click on Submit to save your guesses.</div>
+  <p>Predictions can be modified 15 minutes after the match has begun.</p>
+  <div class="alert alert-info">Tip: Watch the beginning of each match to maximize your chance.</div>
   <form method="post">
     {% csrf_token %}
 
-    {% for match in matches %}
+    {% for info in infos %}
     <div class="row px-3" style="line-height:30px;">
 
-      <div class="col-2-5">{{match.start_time}}</div>
-    	<div class="col-3 text-right">{{match.team_1}}</div>
+      <div class="col-2-5">{{info.start_time}}</div>
+    	<div class="col-3 text-right">{{info.team_1}}</div>
       <div class="col-0-5 text-right">
-        <input type=number name="{{match.id}}-1" value="{{match.predicted_score_1}}" class="form-control form-control-sm small-input" {% if match.locked %}readonly{% endif %}>
+        <input type=number name="{{info.id}}-1" value="{{info.predicted_score_1}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
       </div>
       <div class="col-0-5 text-center text-info">
-        {% if match.real_score_1 %}
-          {{match.real_score_1}}-{{match.real_score_2}}
-        {% else %}
-          ?-?
-        {% endif %}
+        {{info.real_score_1}}-{{info.real_score_2}}
       </div>
       <div class="col-0-5 text-center">
-        <input type=number name="{{match.id}}-2" value="{{match.predicted_score_2}}" class="form-control form-control-sm small-input" {% if match.locked %}readonly{% endif %}>
+        <input type=number name="{{info.id}}-2" value="{{info.predicted_score_2}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
       </div>
-      <div class="col-3">{{match.team_2}}</div>
+      <div class="col-3">{{info.team_2}}</div>
 
     </div>
     {% endfor %}

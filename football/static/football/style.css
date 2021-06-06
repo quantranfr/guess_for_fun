@@ -7,6 +7,16 @@ h1, h2, h3, h4 {
   margin-top:20px;
 }
 
+ul.no-bullets {
+  list-style-type: none;
+  padding: 50;
+  margin: 0;
+}
+
+.badge {
+  font-size: 14px;
+}
+
 input#id_username + span.helptext, input#id_password2 + span.helptext {
   display: None;
 }
