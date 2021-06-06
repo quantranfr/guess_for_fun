@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
 from .models import Championship, Team, Match, Prediction, Clan, User_Clan
 from datetime import datetime
 import pandas as pd
 import pytz, secrets
+import scipy.stats as ss
+from collections import defaultdict
 
 LOCKED_DELAY = 15*60 # delay after start time in seconds
 
@@ -15,28 +19,14 @@ def index(request):
         'user': request.user,
     }
 
-    matches = Match.objects.order_by('start_time')
-    predictions_user = Prediction.objects.filter(user=request.user)
-
     if request.method == 'POST':
-        if "submit_guesses" in request.POST:
-            for match in matches:
-                predicted_score_1 = request.POST[str(match.id)+'-1']
-                predicted_score_2 = request.POST[str(match.id)+'-2']
-                if predicted_score_1=='' or predicted_score_2=='':
-                    continue
-                prediction = predictions_user.filter(match=match)
-                if prediction:
-                    prediction.update(main_score_1 = predicted_score_1)
-                    prediction.update(main_score_2 = predicted_score_2)
-                else:
-                    prediction = Prediction(
-                        user=request.user,
-                        match=match,
-                        main_score_1=predicted_score_1,
-                        main_score_2=predicted_score_2,
-                    )
-                    prediction.save()
+        if "submit-guesses" in request.POST:
+            predicted = {}
+            for key in request.POST:
+                if key.endswith('-1'):
+                    match_id = key.rstrip('1').rstrip('-')
+                    predicted[match_id] = (request.POST[key], request.POST[match_id+'-2'])
+            context['submit_guesses_feedback'] = _submit_guesses(request.user, predicted)
         elif "submit-join-clan" in request.POST:
             clan_name = request.POST['clan-name-join']
             access_code = request.POST['clan-access-code']
@@ -46,33 +36,42 @@ def index(request):
             clan_name = request.POST['clan-name-create']
             context['create_clan_feedback'] = _submit_create_clan(request.user, clan_name)
 
-    user_clans = User_Clan.objects.filter(user=request.user)
-    if user_clans:
-        context['user_clans'] = user_clans
+        elif "submit-leave-clan" in request.POST:
+            if 'delete-clan-id' in request.POST:
+                c=Clan.objects.get(pk=request.POST['delete-clan-id'])
+                c.delete()
+            else:
+                User_Clan.objects.filter(user=request.user, clan__id=request.POST['leave-clan-id']).delete()
 
-    display_info = []
+    # display user's points
+    context['points'] = _calculate_points(request.user)
 
-    for match in matches:
-        prediction = predictions_user.filter(match=match)
-        display_info.append({
-            'id': match.id,
-            'start_time': match.start_time.astimezone(tz=pytz.timezone('Asia/Ho_Chi_Minh')).strftime("%a %m/%d %H:%M"),
-            'team_1': match.team_1.name,
-            'team_2': match.team_2.name,
-            'locked': (datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))-match.start_time).total_seconds() > LOCKED_DELAY,
-            'real_score_1': match.main_score_1 if match.main_score_1 else '',#  match.updated_at - match.start_time > 105*60 else None,
-            'real_score_2': match.main_score_2 if match.main_score_2 else '',#updated_at - match.start_time > 105*60 else None,
-            'predicted_score_1': prediction[0].main_score_1 if prediction else '',
-            'predicted_score_2': prediction[0].main_score_2 if prediction else '',
-        })
+    # display user's clans
+    uclans = User_Clan.objects.filter(user=request.user)
+    if uclans:
+        context['uclans'] = uclans
 
-    context['matches'] = display_info
+    # display matches and user's predictions
+    context['matches'] = _display_matches(request.user)
+
     return render(request, 'prediction/index.html', context)
 
-def predict(request):
-    print (request.POST)
-    return HttpResponse()
-    #return HttpResponse(f"{user} has just predicted.")
+@login_required
+def clan(request, clan_id):
+    '''
+    Retrieve a dict <username: points>
+    '''
+
+    c = get_object_or_404(Clan, pk=clan_id)
+    users = []
+    for _ in User_Clan.objects.filter(clan=c):
+        users.append(_.user)
+    username_pts_rank = _calculate_points_and_rank(users)
+    context = {
+        'clan': c,
+        'username_pts_rank': username_pts_rank
+    }
+    return render(request, 'prediction/clan.html', context)
 
 @permission_required('is_superuser')
 def add_teams(request):
@@ -187,6 +186,109 @@ def _utcdiff_to_zformat(utc_diff):
 
     return ('+' if utc_diff==abs(utc_diff) else '-') + str(int(abs(utc_diff))).zfill(2) + ('00' if utc_diff == int(utc_diff) else '30')
 
+def _display_matches(user):
+    '''
+    Get match info to display. TODO: championship matters...
+    '''
+
+    info = []
+    pu = Prediction.objects.filter(user=user)
+    for m in Match.objects.order_by('start_time'):
+        p = pu.filter(match=m)
+        info.append({
+            'id': m.id,
+            'start_time': m.start_time.astimezone(tz=pytz.timezone(settings.TIME_ZONE)).strftime("%a %m/%d %H:%M"),
+            'team_1': m.team_1.name,
+            'team_2': m.team_2.name,
+            'locked': (datetime.now(pytz.timezone(settings.TIME_ZONE))-m.start_time).total_seconds() > LOCKED_DELAY,
+            'real_score_1': m.main_score_1 if m.main_score_1 else '',
+            'real_score_2': m.main_score_2 if m.main_score_2 else '',
+            'predicted_score_1': p[0].main_score_1 if p else '',
+            'predicted_score_2': p[0].main_score_2 if p else '',
+        })
+
+    return info
+
+def _calculate_points(user):
+    '''
+    Get one's points. TODO: championship matters...
+    '''
+
+    pts = 0
+    for p in Prediction.objects.filter(user=user):
+        if p.match.main_score_1 is None: continue
+        pts += _check_scoring_policy(
+            p.match.main_score_1,
+            p.match.main_score_2,
+            p.main_score_1,
+            p.main_score_2)
+    return pts
+
+def _calculate_points_and_rank(users):
+    '''
+    Get points for many users at the same time. TODO: championship matters...
+
+    Suppose users' points for a clan is [1, 2, 3, 3, 3, 4, 5]
+    The ranking should be               [7, 6, 3, 3, 3, 2, 1]
+
+    Return: [(username, pts, rank)], ordered by rank
+    '''
+
+    user_pts = defaultdict(int) # <username: pts>
+    for p in Prediction.objects.all():
+        if p.match.main_score_1 is None: continue
+        if p.user not in users: continue
+        if p.user.username not in user_pts: user_pts[p.user.username]=0
+        user_pts[p.user.username] += _check_scoring_policy(
+            p.match.main_score_1,
+            p.match.main_score_2,
+            p.main_score_1,
+            p.main_score_2)
+
+    # ranking
+    lp = [user_pts[u.username] for u in users] # [1, 2, 3, 3, 3, 4, 5]
+    ranks = len(lp)+1-ss.rankdata(lp, method='max') # [7, 6, 3, 3, 3, 2, 1]
+    rank_of_points = dict(zip(lp, ranks)) # {1:7, 2:6,...}
+    res = [(u.username, user_pts[u.username], rank_of_points[user_pts[u.username]]) for u in users] # [(rank, username, pts)]
+    return sorted(res, key=lambda i:i[2]) # sorted by rank
+
+def _check_scoring_policy(s1, s2, ps1, ps2):
+    '''
+    s1: real score of team 1
+    ps1: predicted score of team 1
+    ...
+    '''
+
+    winner = 1 if s1 > s2 else 2 if s1 < s2 else 0
+    winner_predicted = 1 if ps1 > ps2 else 2 if ps1 < ps2 else 0
+    return 3 if winner == winner_predicted else 0
+
+def _submit_guesses(user, predicted):
+    '''
+    IN: predicted: dict <match_id: (main_score_1, main_score_2)>
+    OUT: Out: a message and the corresponding bootstrap class
+    '''
+
+    for match_id in predicted:
+        main_score_1, main_score_2 = predicted[match_id]
+        if main_score_1=='' or main_score_2=='':
+            continue
+        match = Match.objects.get(pk=match_id)
+        prediction = Prediction.objects.filter(user=user, match=match)
+        if prediction:
+            prediction.update(main_score_1=main_score_1, main_score_2=main_score_2)
+        else:
+            prediction = Prediction(
+                user=user,
+                match=match,
+                main_score_1=main_score_1,
+                main_score_2=main_score_2,
+            )
+            prediction.save()
+    nb_predicted = Prediction.objects.filter(user=user).count()
+    nb_all = Match.objects.count()
+    return f'You have predicted {nb_predicted}/{nb_all} matches.', 'alert-success'
+
 def _submit_join_clan(user, clan_name, access_code):
     '''
     Let a user can join a clan with his access_code.
@@ -212,7 +314,7 @@ def _submit_create_clan(user, clan_name):
     '''
     Let a user create a clan.
     In: fairly clear
-    Out: a message
+    Out: a message and the corresponding bootstrap class
     '''
 
     if Clan.objects.filter(name=clan_name):
@@ -224,3 +326,14 @@ def _submit_create_clan(user, clan_name):
         uc = User_Clan(user=user, clan=c)
         uc.save()
         return f'Send this access code "{access_code}" (without quotes) to your friends so that they can join the clan {clan_name}.', 'alert-success'
+
+def _get_user_clan_ranking(user, clan):
+    '''
+    See the name
+    Suppose users' scores for a clan is [1, 2, 3, 3, 3, 4, 5]
+    The ranking should be [7, 6, 3, 3, 3, 2, 1]
+    '''
+    pass
+    #return User_Clan.objects.filter(clan=clan).order_by('-points')
+    #lpoints = [user.points for user in users]
+    #ranks = len(lpoints)+1-ss.rankdata(lpoints, method='max')

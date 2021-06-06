@@ -9,19 +9,24 @@
   {% if create_clan_feedback %}
   <div class="alert {{ create_clan_feedback.1 }}">{{ create_clan_feedback.0 }}</div>
   {% endif %}
+  {% if submit_guesses_feedback %}
+  <div class="alert {{ submit_guesses_feedback.1 }}">{{ submit_guesses_feedback.0 }}</div>
+  {% endif %}
 
   <h3>Your rank</h3>
-  {% if user_clans %}
-  <p>Click on one of your clans to see the ranking:</p>
-  <div class="list-group" style="width:300px">
-    {% for user_clan in user_clans %}
-    <a href="" class="list-group-item list-group-item-action">{{ user_clan.clan }}</a>
-    {% endfor %}
-  </div>
+  <p>You've got <strong>{{ points }}</strong> points.</p>
+
+  {% if uclans %}
+    <p>Click on one of your clans to see the ranking:</p>
+    <div class="list-group" style="width:300px">
+      {% for uc in uclans %}
+        <a href="{% url 'prediction:clan' uc.clan.id %}" class="list-group-item list-group-item-action">{{ uc.clan }}</a>
+      {% endfor %}
+    </div>
   {% else %}
-  <p>No clan (ie. friend group) found,
-     but you can still make predictions now. Create or join a clan at the bottom of the page.
-  </p>
+    <p>No clan (ie. friend group) found,
+      but you can still make predictions now. Create or join a clan at the bottom of the page.
+    </p>
   {% endif %}
 
   <hr />
@@ -55,7 +60,7 @@
     </div>
     {% endfor %}
 
-    <input type="submit" name="submit_guesses" value="Submit" class="btn btn-primary">
+    <input type="submit" name="submit-guesses" value="Submit" class="btn btn-primary">
   </form>
 
   <hr />
