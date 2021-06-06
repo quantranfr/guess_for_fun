@@ -2,42 +2,63 @@
 
 {% block content %}
   <h1>Guess hub</h1>
+
+  {% if join_clan_feedback %}
+  <div class="alert {{ join_clan_feedback.1 }}">{{ join_clan_feedback.0 }}</div>
+  {% endif %}
+  {% if create_clan_feedback %}
+  <div class="alert {{ create_clan_feedback.1 }}">{{ create_clan_feedback.0 }}</div>
+  {% endif %}
+
   <h3>Your rank</h3>
   {% if user_clans %}
   <p>Click on one of your clans to see the ranking:</p>
-  <ul>
+  <div class="list-group" style="width:300px">
     {% for user_clan in user_clans %}
-    <li><a href="">{{ user_clan.clan }}</a></li>
+    <a href="" class="list-group-item list-group-item-action">{{ user_clan.clan }}</a>
     {% endfor %}
-  </ul>
+  </div>
   {% else %}
   <p>No clan (ie. friend group) found,
      but you can still make predictions now. Create or join a clan at the bottom of the page.
   </p>
   {% endif %}
 
+  <hr />
+
   <h3>Your guesses</h3>
   <p>Predictions can be modified until the 15th minutes of the corresponding matches.</p>
-  <p>Watch the beginning of each match to maximize your chance. And don't forget to click on Submit to save your guesses.</p>
+  <div class="alert alert-info">Tip: Watch the beginning of each match to maximize your chance. And don't forget to click on Submit to save your guesses.</div>
   <form method="post">
     {% csrf_token %}
-    <ul>
+
     {% for match in matches %}
-    <li>
-	    {{match.start_time}}
-    	{{match.team_1}}
-    	<input type=text name="{{match.id}}-1" value="{{match.predicted_score_1}}" {% if match.locked %}readonly{% endif %}>
-    	-
-    	<input type=text name="{{match.id}}-2" value="{{match.predicted_score_2}}" {% if match.locked %}readonly{% endif %}>
-    	{{match.team_2}}
-    	{% if match.real_score_1 %}
-    	(real score: {{match.real_score_1}}-{{match.real_score_2}})
-    	{% endif %}
-    </li>
+    <div class="row px-3" style="line-height:30px;">
+
+      <div class="col-2-5">{{match.start_time}}</div>
+    	<div class="col-3 text-right">{{match.team_1}}</div>
+      <div class="col-0-5 text-right">
+        <input type=number name="{{match.id}}-1" value="{{match.predicted_score_1}}" class="form-control form-control-sm small-input" {% if match.locked %}readonly{% endif %}>
+      </div>
+      <div class="col-0-5 text-center text-info">
+        {% if match.real_score_1 %}
+          {{match.real_score_1}}-{{match.real_score_2}}
+        {% else %}
+          ?-?
+        {% endif %}
+      </div>
+      <div class="col-0-5 text-center">
+        <input type=number name="{{match.id}}-2" value="{{match.predicted_score_2}}" class="form-control form-control-sm small-input" {% if match.locked %}readonly{% endif %}>
+      </div>
+      <div class="col-3">{{match.team_2}}</div>
+
+    </div>
     {% endfor %}
-    </ul>
-    <input type="submit" name="submit_guesses" value="Submit">
+
+    <input type="submit" name="submit_guesses" value="Submit" class="btn btn-primary">
   </form>
+
+  <hr />
 
   <h3>Join a clan</h3>
   <form method="post">
@@ -46,16 +67,16 @@
     <input type=text name="clan-name-join"><br />
     <label for="clan-access-code">Access code: </label><br />
     <input type=text name="clan-access-code"><br />
-    <input type="submit" name="submit-join-clan" value="Join">
-    <p>{{ join_clan_feedback }}</p>
+    <input type="submit" name="submit-join-clan" value="Join" class="btn btn-secondary">
   </form>
+
+  <hr />
 
   <h3>Create a clan</h3>
   <form method="post">
     {% csrf_token %}
     <label for="clan-name-create" width="300px">Clan name: </label><br />
     <input type=text name="clan-name-create"><br />
-    <input type="submit" name="submit-create-clan" value="Create">
-    <p>{{ create_clan_feedback }}</p>
+    <input type="submit" name="submit-create-clan" value="Create" class="btn btn-secondary">
   </form>
 {% endblock %}

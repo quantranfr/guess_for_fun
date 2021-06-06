@@ -14,8 +14,7 @@
 
 {% else %}
   <p>Spice up your summer: Euro 2021 is here!</p>
-  <a href="{% url 'login' %}">Log In</a>
-  <p>
-  <a href="{% url 'signup' %}">Sign Up</a>
+  <a href="{% url 'login' %}" class='btn btn-primary'>Log In</a>
+  <a href="{% url 'signup' %}" class='btn btn-primary'>Sign Up</a>
 {% endif %}
 {% endblock %}

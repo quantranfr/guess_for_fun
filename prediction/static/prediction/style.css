@@ -1,0 +1,53 @@
+body {
+  font-family:Courier New;
+  padding: 10px;
+}
+
+h1, h2, h3, h4 {
+  margin-top:20px;
+}
+
+input#id_username + span.helptext, input#id_password2 + span.helptext {
+  display: None;
+}
+/*------------ MATCH LIST -----------*/
+.row { /* for line spacing */
+  padding: 2px;
+}
+
+.small-input { /* for scores input */
+  width: 40px !important;
+}
+
+.col-0-5 { /* for scores */
+    flex: 0 0 5%;
+    max-width: 40px;
+    min-width: 40px;
+    position: relative;
+    width: 100%;
+}
+
+.col-2-5 { /* for team names */
+    flex: 0 0 18%;
+    max-width: 18%;
+    position: relative;
+    width: 100%;
+}
+
+.btn {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/*------------ REMOVE ARROWS/SPINNERS IN NUMERIC INPUT -----------*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

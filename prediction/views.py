@@ -56,7 +56,7 @@ def index(request):
         prediction = predictions_user.filter(match=match)
         display_info.append({
             'id': match.id,
-            'start_time': match.start_time,
+            'start_time': match.start_time.astimezone(tz=pytz.timezone('Asia/Ho_Chi_Minh')).strftime("%a %m/%d %H:%M"),
             'team_1': match.team_1.name,
             'team_2': match.team_2.name,
             'locked': (datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))-match.start_time).total_seconds() > LOCKED_DELAY,
@@ -191,7 +191,7 @@ def _submit_join_clan(user, clan_name, access_code):
     '''
     Let a user can join a clan with his access_code.
     In: fairly clear
-    Out: a message.
+    Out: a message and the corresponding bootstrap class
     '''
 
     c = Clan.objects.filter(name=clan_name, access_code=access_code)
@@ -200,13 +200,13 @@ def _submit_join_clan(user, clan_name, access_code):
         if not lookup: # not registered before
             uc = User_Clan(user=user, clan=c[0])
             uc.save()
-            return f'Congratulations! You have joined the clan {clan_name}.'
+            return f'Congratulations! You have joined the clan {clan_name}.', 'alert-success'
         else: # already registered
-            return f'No Action. You already joined the clan {clan_name}.'
+            return f'No Action. You already joined the clan {clan_name}.', 'alert-warning'
     elif Clan.objects.filter(name=clan_name): # wrong access code
-        return f'Wrong access code for the clan {clan_name}.'
+        return f'Wrong access code for the clan {clan_name}.', 'alert alert-danger'
     else: # no such clan
-        return f'No clan {clan_name} found.'
+        return f'No clan {clan_name} found.', 'alert-danger'
 
 def _submit_create_clan(user, clan_name):
     '''
@@ -216,11 +216,11 @@ def _submit_create_clan(user, clan_name):
     '''
 
     if Clan.objects.filter(name=clan_name):
-        return f'Clan {clan_name} already exists.'
+        return f'Clan {clan_name} already exists.', 'alert-warning'
     else:
         access_code = secrets.token_urlsafe(3)
         c = Clan(name=clan_name, access_code=access_code)
         c.save()
         uc = User_Clan(user=user, clan=c)
         uc.save()
-        return f'Send this access code "{access_code}" (without quotes) to your friends so that they can join the clan {clan_name}.'
+        return f'Send this access code "{access_code}" (without quotes) to your friends so that they can join the clan {clan_name}.', 'alert-success'
