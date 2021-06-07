@@ -7,25 +7,32 @@
 
 
   <div class="jumbotron">
-    <h1>Guess For Fun</h1>
-    <p>Welcome to the friendliest platform of sport prediction, legit and fun.<p>
-    <p>Now on air: Euro 2021!</p>
+    <h1>Dự đoán tỷ số</h1>
+    <p><em>Ứng dụng dự đoán tỷ số bóng đá tiện lợi và hợp pháp dành cho người Việt</em></p>
+    <p></p><p></p>
+    <p>
+      <span class="badge badge-success">1</span> Dự đoán<br/>
+      <span class="badge badge-success">2</span> Tạo hoặc tham gia nhóm bạn bè<br/>
+      <span class="badge badge-success">3</span> Xem ai điểm cao nhất cuối giải đấu. Phần thưởng cho người giỏi nhất do nhóm quyết định.
+    </p>
+    <p>
+      Hiện đang mở cho: <strong>Euro 2021</strong>!
+    </p>
   </div>
 
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">How to gain points</h5>
+      <h5 class="card-title">Cách tính điểm</h5>
       <div class="card-text">
-        For each match, you have:
+        Cho mỗi trận đấu, bạn sẽ có:
+        <ul class="no-bullets">
+          <li><span class="badge badge-success">8</span> điểm nếu dự đoán đúng tỷ số trận đấu.</li>
+          <li><span class="badge badge-success">5</span> điểm nếu dự đoán đúng cách biệt tỷ số (trận 2-1 bạn dự đoán 1-0, hoặc trận hoà).</li>
+          <li><span class="badge badge-success">4</span> điểm nếu dự đoán đúng đội thắng và số bàn thắng của 1 đội (trận 2-1 bạn dự đoán 3-1).</li>
+          <li><span class="badge badge-success">3</span> điểm nếu chỉ dự đoán đúng đội thắng mà thôi (trận 2-1 bạn dự đoán 3-0).</li>
+        </ul>
         <p></p>
-        <table class="table table-borderless">
-          <tr><td class="badge badge-info">8 pts</td><td>for the right <strong>winner</strong> and the <strong>2 scores</strong>.</td></tr>
-          <tr><td class="badge badge-info">5 pts</td><td>for the right <strong>winner</strong> and the <strong>goal difference</strong> (or a <strong>draw</strong>).</td></tr>
-          <tr><td class="badge badge-info">4 pts</td><td>for the right <strong>winner</strong> and <strong>1 score</strong>.</td></tr>
-          <tr><td class="badge badge-info">3 pts</td><td>for just the right <strong>winner</strong>.</td></tr>
-          <tr><td colspan=2>Double the points for play-off matches. Penalty shoot-out doesn't count.</td></tr>
-        </table>
-
+        <p>Điểm số nhân đôi cho vòng loại trực tiếp. Số bàn thắng trong 2 hiệp chính và 2 hiệp phụ được coi là kết quả trận đấu. Không tính loạt sút luân lưu.
         </div>
       </div>
     </div>
@@ -35,12 +42,12 @@
 
 {% if user.is_authenticated %}
   <p>You are logged in as <strong>{{ user }}</strong>.</p>
-  <p><a href="{% url 'football:index' %}" class='btn btn-success'>Guess hub</a></p>
-  <p><a href="{% url 'logout' %}" class='btn btn-danger'>Log Out</a></p>
+  <p><a href="{% url 'football:index' %}" class='btn btn-success'>Dự đoán nào</a></p>
+  <p><a href="{% url 'logout' %}" class='btn btn-danger'>Đăng xuất</a></p>
 
 {% else %}
-  <a href="{% url 'login' %}" class='btn btn-primary'>Log In</a>
-  <a href="{% url 'signup' %}" class='btn btn-primary'>Sign Up</a>
-  <a href="{% url 'football:index' %}" class='btn btn-success'>Take a tour</a>
+  <a href="{% url 'login' %}" class='btn btn-primary'>Đăng nhập</a>
+  <a href="{% url 'signup' %}" class='btn btn-primary'>Đăng ký</a>
+  <a href="{% url 'football:index' %}" class='btn btn-success'>Tham quan</a>
 {% endif %}
 {% endblock %}

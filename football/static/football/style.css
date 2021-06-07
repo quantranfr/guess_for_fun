@@ -9,7 +9,7 @@ h1, h2, h3, h4 {
 
 ul.no-bullets {
   list-style-type: none;
-  padding: 50;
+  padding: 0;
   margin: 0;
 }
 

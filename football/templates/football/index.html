@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Guess hub</h1>
+  <h1>Trung tâm dự đoán</h1>
 
   {% if not user.is_authenticated %}
   <div class="alert alert-warning">
-    You are not logged in and are not allowed to do any action.<br />
-    <a href="{% url 'login' %}" class='btn btn-primary'>Log In</a>
+    Bạn chưa đăng nhập nên chưa được phép thực hiện các tác vụ ở đây.<br />
+    <a href="{% url 'login' %}" class='btn btn-primary'>Đăng nhập</a>
   </div>
   {% endif %}
 
@@ -21,26 +21,25 @@
   {% endif %}
 
   {% if user.is_authenticated %}
-    <h3>Your rank</h3>
-    <p>You've got <strong>{{ points }}</strong> points.</p>
+    <h3>Thứ hạng của bạn</h3>
+    <p>Bạn có <strong>{{ points }}</strong> điểm.</p>
     {% if uclans %}
-      <p>Click on one of your clans to see the ranking:</p>
+      <p>Chọn một trong các nhóm mà bạn tham gia để xem chi tiết thứ hạng.</p>
       <div class="list-group" style="width:300px">
         {% for uc in uclans %}
           <a href="{% url 'football:clan' uc.clan.id %}" class="list-group-item list-group-item-action">{{ uc.clan }}</a>
         {% endfor %}
       </div>
     {% else %}
-      <p>No clan (ie. friend group) found,
-        but you can still make predictions now. Create or join a clan at the bottom of the page.
+      <p>Bạn chưa tham gia nhóm nào, nhưng vẫn có thể dự đoán ngay, rồi tạo hoặc tham gia vào nhóm sau.
       </p>
     {% endif %}
     <hr />
   {% endif %}
 
-  <h3>Your guesses</h3>
-  <p>Predictions can be modified 15 minutes after the match has begun.</p>
-  <div class="alert alert-info">Tip: Watch the beginning of each match to maximize your chance.</div>
+  <h3>Dự đoán của bạn</h3>
+  <p>Dự đoán được phép thay đổi cho đến khi trận đấu đã bắt đầu được 15 phút.</p>
+  <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
   <form method="post">
     {% csrf_token %}
 
@@ -63,28 +62,28 @@
     </div>
     {% endfor %}
 
-    <input type="submit" name="submit-guesses" value="Submit" class="btn btn-primary">
+    <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
   </form>
 
   <hr />
 
-  <h3>Join a clan</h3>
+  <h3>Tham gia nhóm</h3>
   <form method="post">
     {% csrf_token %}
-    <label for="clan-name-join">Clan name: (case-sensitive) </label><br />
+    <label for="clan-name-join">Tên nhóm: (chú ý hoa thường) </label><br />
     <input type=text name="clan-name-join"><br />
-    <label for="clan-access-code">Access code: </label><br />
+    <label for="clan-access-code">Mã tham gia: </label><br />
     <input type=text name="clan-access-code"><br />
-    <input type="submit" name="submit-join-clan" value="Join" class="btn btn-secondary">
+    <input type="submit" name="submit-join-clan" value="Tham gia" class="btn btn-secondary">
   </form>
 
   <hr />
 
-  <h3>Create a clan</h3>
+  <h3>Tạo nhóm</h3>
   <form method="post">
     {% csrf_token %}
-    <label for="clan-name-create" width="300px">Clan name: </label><br />
+    <label for="clan-name-create" width="300px">Tên nhóm: </label><br />
     <input type=text name="clan-name-create"><br />
-    <input type="submit" name="submit-create-clan" value="Create" class="btn btn-secondary">
+    <input type="submit" name="submit-create-clan" value="Tạo" class="btn btn-secondary">
   </form>
 {% endblock %}

@@ -339,7 +339,7 @@ def _submit_guesses(user, predicted):
             prediction.save()
     nb_predicted = Prediction.objects.filter(user=user).count()
     nb_all = Match.objects.count()
-    return f'You have predicted {nb_predicted}/{nb_all} matches.', 'alert-success'
+    return f'Bạn đã đoán {nb_predicted}/{nb_all} trận.', 'alert-success'
 
 def _submit_join_clan(user, clan_name, access_code):
     '''
@@ -354,13 +354,13 @@ def _submit_join_clan(user, clan_name, access_code):
         if not lookup: # not registered before
             uc = User_Clan(user=user, clan=c[0])
             uc.save()
-            return f'Congratulations! You have joined the clan {clan_name}.', 'alert-success'
+            return f'Xin chúc mừng! Bạn vừa tham gia nhóm {clan_name}.', 'alert-success'
         else: # already registered
-            return f'No Action. You already joined the clan {clan_name}.', 'alert-warning'
+            return f'Vô hiệu. Bạn đã ở sẵn trong nhóm {clan_name} rồi.', 'alert-warning'
     elif Clan.objects.filter(name=clan_name): # wrong access code
-        return f'Wrong access code for the clan {clan_name}.', 'alert alert-danger'
+        return f'Sai mã tham gia cho nhóm {clan_name}.', 'alert alert-danger'
     else: # no such clan
-        return f'No clan {clan_name} found.', 'alert-danger'
+        return f'Không tìm thấy nhóm {clan_name}.', 'alert-danger'
 
 def _submit_create_clan(user, clan_name):
     '''
@@ -377,4 +377,4 @@ def _submit_create_clan(user, clan_name):
         c.save()
         uc = User_Clan(user=user, clan=c)
         uc.save()
-        return f'Send this access code "{access_code}" (without quotes) to your friends so that they can join the clan {clan_name}.', 'alert-success'
+        return f'Gửi mã tham gia này "{access_code}" (bên trong ngoặc kép) cho bạn bè để họ tham gia nhóm {clan_name}.', 'alert-success'

@@ -2,10 +2,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Log In</h2>
+  <h2>Đăng nhập</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class='btn btn-primary'>Log In</button>
+    <button type="submit" class='btn btn-primary'>Đăng nhập</button>
   </form>
 {% endblock %}

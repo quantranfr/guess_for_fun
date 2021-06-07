@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <a href="{% url 'football:index' %}">&lt; Guess hub</a>
+  <a href="{% url 'football:index' %}">&lt; Trung tâm dự đoán</a>
 {% endblock %}
 
 {% block content %}
-  <h2>Clan {{clan}}</h2>
+  <h2>Nhóm {{clan}}</h2>
 
-  Access code to invite friends: <strong>{{ clan.access_code }}</strong>
+  Mã tham gia nhóm để mời bạn bè: <strong>{{ clan.access_code }}</strong>
   <p></p>
   <div class="row px-3">
-    <div class="col-2"><strong>Rank</strong></div>
-    <div class="col-3"><strong>Username</strong></div>
-    <div class="col-2 text-right"><strong>Points</strong></div>
+    <div class="col-2"><strong>Hạng</strong></div>
+    <div class="col-3"><strong>Tên</strong></div>
+    <div class="col-2 text-right"><strong>Điểm</strong></div>
 
   </div>
   {% for username, pts, rank in username_pts_rank %}
@@ -28,11 +28,11 @@
   <form action="{% url 'football:index' %}" method="POST">
     {% csrf_token %}
     {% if username_pts_rank|length == 1 %}
-      <div class="alert alert-warning">You are the last one, leaving the clan will lead to its suppression.</div>
+      <div class="alert alert-warning">Nhóm này sẽ bị xóa nếu bạn rời nhóm vì bạn là người duy nhất trong nhóm.</div>
       <input type=hidden name="delete-clan-id" value="{{ clan.id }}">
     {% endif %}
     <input type=hidden name="leave-clan-id" value="{{ clan.id }}">
-    <button class='btn btn-danger' name="submit-leave-clan">Leave clan</button>
+    <button class='btn btn-danger' name="submit-leave-clan">Rời nhóm</button>
   </form>
 
 {% endblock %}
