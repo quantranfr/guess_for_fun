@@ -11,9 +11,9 @@
     <p><em>Ứng dụng dự đoán tỷ số bóng đá tiện lợi và hợp pháp dành cho người Việt</em></p>
     <p></p><p></p>
     <p>
-      <span class="badge badge-success">1</span> Dự đoán<br/>
-      <span class="badge badge-success">2</span> Tạo hoặc tham gia nhóm bạn bè<br/>
-      <span class="badge badge-success">3</span> Xem ai điểm cao nhất cuối giải đấu. Phần thưởng cho người giỏi nhất do nhóm quyết định.
+      <span class="badge badge-success">1</span> Dự đoán.<br/>
+      <span class="badge badge-success">2</span> Tạo nhóm bạn bè hoặc tham gia vào một nhóm có sẵn.<br/>
+      <span class="badge badge-success">3</span> Theo dõi số điểm có được trong suốt giải đấu. Cuối giải, phần thưởng sẽ do nhóm tự quyết định.
     </p>
     <p>
       Hiện đang mở cho: <strong>Euro 2021</strong>!
@@ -26,13 +26,13 @@
       <div class="card-text">
         Cho mỗi trận đấu, bạn sẽ có:
         <ul class="no-bullets">
-          <li><span class="badge badge-success">8</span> điểm nếu dự đoán đúng tỷ số trận đấu.</li>
-          <li><span class="badge badge-success">5</span> điểm nếu dự đoán đúng cách biệt tỷ số (trận 2-1 bạn dự đoán 1-0, hoặc trận hoà).</li>
-          <li><span class="badge badge-success">4</span> điểm nếu dự đoán đúng đội thắng và số bàn thắng của 1 đội (trận 2-1 bạn dự đoán 3-1).</li>
-          <li><span class="badge badge-success">3</span> điểm nếu chỉ dự đoán đúng đội thắng mà thôi (trận 2-1 bạn dự đoán 3-0).</li>
+          <li><span class="badge badge-warning">8</span> điểm nếu dự đoán đúng tỷ số trận đấu.</li>
+          <li><span class="badge badge-warning">5</span> điểm nếu dự đoán đúng cách biệt tỷ số (trận 2-1 bạn dự đoán 1-0, hoặc trận hoà).</li>
+          <li><span class="badge badge-warning">4</span> điểm nếu dự đoán đúng đội thắng và số bàn thắng của 1 đội (trận 2-1 bạn dự đoán 3-1).</li>
+          <li><span class="badge badge-warning">3</span> điểm nếu chỉ dự đoán đúng đội thắng mà thôi (trận 2-1 bạn dự đoán 3-0).</li>
         </ul>
         <p></p>
-        <p>Điểm số nhân đôi cho vòng loại trực tiếp. Số bàn thắng trong 2 hiệp chính và 2 hiệp phụ được coi là kết quả trận đấu. Không tính loạt sút luân lưu.
+        <p><strong>Vòng loại trực tiếp</strong>: Điểm số nhân đôi. Số bàn thắng trong các hiệp chính và phụ được coi là kết quả của trận đấu. Không tính loạt sút luân lưu.
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@
 <p></p>
 
 {% if user.is_authenticated %}
-  <p>You are logged in as <strong>{{ user }}</strong>.</p>
+  <p>Xin chào <strong>{{ user }}</strong>.</p>
   <p><a href="{% url 'football:index' %}" class='btn btn-success'>Dự đoán nào</a></p>
   <p><a href="{% url 'logout' %}" class='btn btn-danger'>Đăng xuất</a></p>
 
