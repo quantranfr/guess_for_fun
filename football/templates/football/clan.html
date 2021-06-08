@@ -11,14 +11,14 @@
   <p></p>
   <div class="row px-3">
     <div class="col-2"><strong>Hạng</strong></div>
-    <div class="col-3"><strong>Tên</strong></div>
+    <div class="col"><strong>Tên</strong></div>
     <div class="col-2 text-right"><strong>Điểm</strong></div>
 
   </div>
   {% for username, pts, rank in username_pts_rank %}
   <div {% if user.username == username %}class="row px-3 text-info" style="font-weight:bold;"{% else %}class="row px-3"{% endif %}>
     <div class="col-2">{{ rank }}</div>
-    <div class="col-3">{{ username }}</div>
+    <div class="col">{{ username }}</div>
     <div class="col-2 text-right">{{ pts }}</div>
   </div>
   {% endfor %}
