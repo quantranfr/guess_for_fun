@@ -40,14 +40,15 @@
   <h3>Dự đoán của bạn</h3>
   <p>Dự đoán được phép thay đổi cho đến khi trận đấu đã bắt đầu được 15 phút.</p>
   <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
-  <form method="post">
+  <form id="list-matches" method="post">
     {% csrf_token %}
 
     {% for info in infos %}
     <div class="row px-3" style="line-height:30px;">
-
-      <div class="col-2-5">{{info.start_time}}</div>
-    	<div class="col-3 text-right">{{info.team_1}}</div>
+      {{info.start_time}}
+    </div>
+    <div class="row px-3" style="line-height:30px;">
+    	<div class="col text-right">{{info.team_1}}</div>
       <div class="col-0-5 text-right">
         <input type=number name="{{info.id}}-1" value="{{info.predicted_score_1}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
       </div>
@@ -57,7 +58,7 @@
       <div class="col-0-5 text-center">
         <input type=number name="{{info.id}}-2" value="{{info.predicted_score_2}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
       </div>
-      <div class="col-3">{{info.team_2}}</div>
+      <div class="col">{{info.team_2}}</div>
 
     </div>
     {% endfor %}

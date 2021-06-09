@@ -21,6 +21,10 @@ input#id_username + span.helptext, input#id_password2 + span.helptext {
   display: None;
 }
 /*------------ MATCH LIST -----------*/
+#list-matches {
+  font-size: 10pt;
+}
+
 .row { /* for line spacing */
   padding: 2px;
 }
