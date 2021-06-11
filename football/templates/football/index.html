@@ -50,13 +50,13 @@
           {% for t in teams %}
             <option value="{{ t }}" {% if predicted_champion and predicted_champion.name == t.name %}selected{% endif %}>{{ t }}</option>
           {% endfor %}
-        </select>
+        </select> (được dự đoán đến 23h ngày 26/6)
       </div>
     </div>
     <p></p>
     <div class="card card-body">
       <h5 class="card-title">Vòng bảng</h5>
-      <p>Dự đoán được phép thay đổi cho đến khi trận đấu đã bắt đầu được 15 phút.</p>
+      <p>Thời hạn đóng dự đoán cho mỗi trận: phút thứ 15 kể từ khi trận đấu khởi tranh.</p>
       <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
       {% for info in infos %}
       <div class="row px-3" style="line-height:30px;">
