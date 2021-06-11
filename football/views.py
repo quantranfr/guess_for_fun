@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from .models import Championship, Team, Match, Prediction, Clan, User_Clan
+from .models import Championship, Team, Match, Prediction, Clan, User_Clan, Prediction_Champion
 from datetime import datetime
 import pandas as pd
 import pytz, secrets
@@ -17,6 +17,7 @@ def index(request):
 
     context = {
         'user': request.user,
+        'teams': Team.objects.all()
     }
 
     #---------- demo to anonymous user -----------
@@ -28,12 +29,13 @@ def index(request):
 
     if request.method == 'POST':
         if "submit-guesses" in request.POST:
+            predicted_champion_name = request.POST['champion']
             predicted = {}
             for key in request.POST:
                 if key.endswith('-1'):
                     match_id = key.rstrip('1').rstrip('-')
                     predicted[match_id] = (request.POST[key], request.POST[match_id+'-2'])
-            context['submit_guesses_feedback'] = _submit_guesses(request.user, predicted)
+            context['submit_guesses_feedback'] = _submit_guesses(request.user, predicted, predicted_champion_name)
         elif "submit-join-clan" in request.POST:
             clan_name = request.POST['clan-name-join']
             access_code = request.POST['clan-access-code']
@@ -59,6 +61,11 @@ def index(request):
     uclans = User_Clan.objects.filter(user=request.user)
     if uclans:
         context['uclans'] = uclans
+
+    # display the predicted champion (if any)
+    predicted_champion = Prediction_Champion.objects.filter(user=request.user)
+    if predicted_champion:
+        context['predicted_champion'] = predicted_champion[0].team
 
     # display matches and user's predictions
     context['infos'] = _display_matches(request.user)
@@ -315,11 +322,25 @@ def _check_scoring_policy(s1, s2, ps1, ps2):
     else:
         return 0
 
-def _submit_guesses(user, predicted):
+def _submit_guesses(user, predicted, predicted_champion_name):
     '''
     IN: predicted: dict <match_id: (main_score_1, main_score_2)>
     OUT: Out: a message and the corresponding bootstrap class
     '''
+
+    if predicted_champion_name:
+        championship = Championship.objects.all()[0] # TODO: championship matters
+        team = Team.objects.filter(name=predicted_champion_name)[0]
+        pc = Prediction_Champion.objects.filter(user=user, championship=championship)
+        if pc:
+            pc.update(team=team)
+        else:
+            pc = Prediction_Champion(
+                championship=championship,
+                user=user,
+                team=team
+            )
+            pc.save()
 
     for match_id in predicted:
         main_score_1, main_score_2 = predicted[match_id]

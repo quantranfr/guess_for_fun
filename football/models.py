@@ -85,3 +85,21 @@ class Prediction(models.Model):
 
     def __str__(self):
         return f'{self.user}\t{self.match}\t{self.main_score_1}-{self.main_score_2}'
+
+
+class Prediction_Champion(models.Model):
+    championship = models.ForeignKey(
+        Championship,
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return f'{self.championship}\t{self.user}\t{self.team}'

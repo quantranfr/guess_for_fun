@@ -38,31 +38,45 @@
   {% endif %}
 
   <h3>Dự đoán của bạn</h3>
-  <p>Dự đoán được phép thay đổi cho đến khi trận đấu đã bắt đầu được 15 phút.</p>
-  <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
-  <form id="list-matches" method="post">
+  <form id="prediction-form" method="post">
     {% csrf_token %}
-
-    {% for info in infos %}
-    <div class="row px-3" style="line-height:30px;">
-      {{info.start_time}}
+    <div class="card card-body">
+      <h5 class="card-title">Đội vô địch</h5>
+      <div class="card-text">
+        <select name="champion">
+          {% if not predicted_champion %}
+            <option value="">Chưa dự đoán</option>
+          {% endif %}
+          {% for t in teams %}
+            <option value="{{ t }}" {% if predicted_champion and predicted_champion.name == t.name %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
-    <div class="row px-3" style="line-height:30px;">
-    	<div class="col text-right">{{info.team_1}}</div>
-      <div class="col-0-5 text-right">
-        <input type=number name="{{info.id}}-1" value="{{info.predicted_score_1}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
+    <p></p>
+    <div class="card card-body">
+      <h5 class="card-title">Vòng bảng</h5>
+      <p>Dự đoán được phép thay đổi cho đến khi trận đấu đã bắt đầu được 15 phút.</p>
+      <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
+      {% for info in infos %}
+      <div class="row px-3" style="line-height:30px;">
+        {{info.start_time}}
       </div>
-      <div class="col-0-5 text-center text-info">
-        {{info.real_score_1}}-{{info.real_score_2}}
+      <div class="row px-3" style="line-height:30px;">
+      	<div class="col text-right">{{info.team_1}}</div>
+        <div class="col-0-5 text-right">
+          <input type=number name="{{info.id}}-1" value="{{info.predicted_score_1}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
+        </div>
+        <div class="col-0-5 text-center text-info">
+          {{info.real_score_1}}-{{info.real_score_2}}
+        </div>
+        <div class="col-0-5 text-center">
+          <input type=number name="{{info.id}}-2" value="{{info.predicted_score_2}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
+        </div>
+        <div class="col">{{info.team_2}}</div>
       </div>
-      <div class="col-0-5 text-center">
-        <input type=number name="{{info.id}}-2" value="{{info.predicted_score_2}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
-      </div>
-      <div class="col">{{info.team_2}}</div>
-
+      {% endfor %}
     </div>
-    {% endfor %}
-
     <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
   </form>
 

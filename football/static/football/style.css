@@ -20,11 +20,8 @@ ul.no-bullets {
 input#id_username + span.helptext, input#id_password2 + span.helptext {
   display: None;
 }
-/*------------ MATCH LIST -----------*/
-#list-matches {
-  font-size: 10pt;
-}
 
+/*------------ MATCH LIST -----------*/
 .row { /* for line spacing */
   padding: 2px;
 }
