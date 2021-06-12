@@ -221,8 +221,8 @@ def _display_matches(user):
             'team_1': m.team_1.name,
             'team_2': m.team_2.name,
             'locked': (datetime.now(pytz.timezone(settings.TIME_ZONE))-m.start_time).total_seconds() > LOCKED_DELAY,
-            'real_score_1': m.main_score_1 if m.main_score_1 else '?',
-            'real_score_2': m.main_score_2 if m.main_score_2 else '?',
+            'real_score_1': m.main_score_1 if m.main_score_1 is not None else '?',
+            'real_score_2': m.main_score_2 if m.main_score_2 is not None else '?',
             'predicted_score_1': p[0].main_score_1 if p else '',
             'predicted_score_2': p[0].main_score_2 if p else '',
         })
