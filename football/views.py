@@ -206,6 +206,13 @@ def _utcdiff_to_zformat(utc_diff):
 
     return ('+' if utc_diff==abs(utc_diff) else '-') + str(int(abs(utc_diff))).zfill(2) + ('00' if utc_diff == int(utc_diff) else '30')
 
+def _display_time(match):
+    '''
+    display match time
+    '''
+
+    return match.start_time.astimezone(tz=pytz.timezone(settings.TIME_ZONE)).strftime("%a %m/%d %H:%M")
+
 def _too_late(match):
     '''
     return True if it is more than LOCKED_DELAY seconds since the beginning of the match
@@ -224,7 +231,7 @@ def _display_matches(user):
         p = pu.filter(match=m)
         infos.append({
             'id': m.id,
-            'start_time': m.start_time.astimezone(tz=pytz.timezone(settings.TIME_ZONE)).strftime("%a %m/%d %H:%M"),
+            'start_time': _display_time(m),
             'team_1': m.team_1.name,
             'team_2': m.team_2.name,
             'locked': _too_late(m),
@@ -245,12 +252,12 @@ def _display_matches_demo():
     for m in Match.objects.order_by('start_time'):
         infos.append({
             'id': m.id,
-            'start_time': m.start_time.astimezone(tz=pytz.timezone(settings.TIME_ZONE)).strftime("%a %m/%d %H:%M"),
+            'start_time': _display_time(m),
             'team_1': m.team_1.name,
             'team_2': m.team_2.name,
             'locked': True,
-            'real_score_1': m.main_score_1 if m.main_score_1 else '?',
-            'real_score_2': m.main_score_2 if m.main_score_2 else '?',
+            'real_score_1': m.main_score_1 if m.main_score_1 is not None else '?',
+            'real_score_2': m.main_score_2 if m.main_score_2 is not None else '?',
             'predicted_score_1': '',
             'predicted_score_2': '',
         })
