@@ -54,8 +54,7 @@
       </div>
     </div>
     <p></p>
-    <div class="card card-body">
-      <h5 class="card-title">Vòng bảng</h5>
+    <h5>Vòng bảng</h5>
       <p>Thời hạn đóng dự đoán cho mỗi trận: phút thứ 15 kể từ khi trận đấu khởi tranh.</p>
       <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
       {% for info in infos %}
@@ -76,7 +75,6 @@
         <div class="col">{{info.team_2}}</div>
       </div>
       {% endfor %}
-    </div>
     <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
   </form>
 
