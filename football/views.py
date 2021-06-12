@@ -206,6 +206,13 @@ def _utcdiff_to_zformat(utc_diff):
 
     return ('+' if utc_diff==abs(utc_diff) else '-') + str(int(abs(utc_diff))).zfill(2) + ('00' if utc_diff == int(utc_diff) else '30')
 
+def _too_late(match):
+    '''
+    return True if it is more than LOCKED_DELAY seconds since the beginning of the match
+    '''
+
+    return (datetime.now(pytz.timezone(settings.TIME_ZONE))-match.start_time).total_seconds() > LOCKED_DELAY
+
 def _display_matches(user):
     '''
     Get match info to display. TODO: championship matters...
@@ -220,7 +227,7 @@ def _display_matches(user):
             'start_time': m.start_time.astimezone(tz=pytz.timezone(settings.TIME_ZONE)).strftime("%a %m/%d %H:%M"),
             'team_1': m.team_1.name,
             'team_2': m.team_2.name,
-            'locked': (datetime.now(pytz.timezone(settings.TIME_ZONE))-m.start_time).total_seconds() > LOCKED_DELAY,
+            'locked': _too_late(m),
             'real_score_1': m.main_score_1 if m.main_score_1 is not None else '?',
             'real_score_2': m.main_score_2 if m.main_score_2 is not None else '?',
             'predicted_score_1': p[0].main_score_1 if p else '',
@@ -349,7 +356,8 @@ def _submit_guesses(user, predicted, predicted_champion_name):
         match = Match.objects.get(pk=match_id)
         prediction = Prediction.objects.filter(user=user, match=match)
         if prediction:
-            prediction.update(main_score_1=main_score_1, main_score_2=main_score_2)
+            if not _too_late(match):
+                prediction.update(main_score_1=main_score_1, main_score_2=main_score_2)
         else:
             prediction = Prediction(
                 user=user,
