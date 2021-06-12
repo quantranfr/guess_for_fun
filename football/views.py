@@ -229,6 +229,8 @@ def _display_matches(user):
     pu = Prediction.objects.filter(user=user)
     for m in Match.objects.order_by('start_time'):
         p = pu.filter(match=m)
+        ps1 = p[0].main_score_1 if p else ''
+        ps2 = p[0].main_score_2 if p else ''
         infos.append({
             'id': m.id,
             'start_time': _display_time(m),
@@ -237,8 +239,10 @@ def _display_matches(user):
             'locked': _too_late(m),
             'real_score_1': m.main_score_1 if m.main_score_1 is not None else '?',
             'real_score_2': m.main_score_2 if m.main_score_2 is not None else '?',
-            'predicted_score_1': p[0].main_score_1 if p else '',
-            'predicted_score_2': p[0].main_score_2 if p else '',
+            'real_score_style': _get_score_style(m.main_score_1, m.main_score_2, ps1, ps2),
+            'predicted_score_1': ps1,
+            'predicted_score_2': ps2,
+
         })
 
     return infos
@@ -306,6 +310,29 @@ def _calculate_points_and_rank(users):
     rank_of_points = dict(zip(lp, ranks)) # {1:7, 2:6,...}
     res = [(u.username, user_pts[u.username], rank_of_points[user_pts[u.username]]) for u in users] # [(rank, username, pts)]
     return sorted(res, key=lambda i:i[2]) # sorted by rank
+
+def _get_score_style(s1, s2, ps1, ps2):
+    '''
+    define the bootstrap classe' when display real scores
+    '''
+
+    res = {
+        'whole': '',
+        's1': '',
+        's2': ''
+    }
+    if s1 is None or s2 is None or ps1 is None or ps2 is None:
+        pass
+    else:
+        winner = 1 if s1 > s2 else 2 if s1 < s2 else 0
+        winner_predicted = 1 if ps1 > ps2 else 2 if ps1 < ps2 else 0
+        if winner == winner_predicted:
+            res['whole'] = 'text-success'
+            if s1==ps1: res['s1'] = 'font-weight-bold'
+            if s2==ps2: res['s2'] = 'font-weight-bold'
+        else:
+            res['whole'] = 'text-danger'
+    return res
 
 def _check_scoring_policy(s1, s2, ps1, ps2):
     '''
