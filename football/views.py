@@ -314,6 +314,8 @@ def _calculate_points_and_rank(users):
 def _get_score_style(s1, s2, ps1, ps2):
     '''
     define the bootstrap classe' when display real scores
+    s1, s1: real scores
+    ps1, ps2: predicted scores
     '''
 
     res = {
@@ -321,7 +323,7 @@ def _get_score_style(s1, s2, ps1, ps2):
         's1': '',
         's2': ''
     }
-    if s1 is None or s2 is None or ps1 is None or ps2 is None:
+    if s1 is None or s2 is None or ps1 is None or ps2 is None or ps1=='' or ps2=='':
         pass
     else:
         winner = 1 if s1 > s2 else 2 if s1 < s2 else 0
