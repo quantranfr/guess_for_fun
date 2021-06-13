@@ -22,25 +22,33 @@ input#id_username + span.helptext, input#id_password2 + span.helptext {
 }
 
 /*------------ MATCH LIST -----------*/
+
+form div.row {
+  font-size: 0.8rem;
+}
+
 .row { /* for line spacing */
   padding: 2px;
 }
 
 .small-input { /* for scores input */
-  width: 40px !important;
+  width: 35px !important;
+}
+
+.team1 {
+  padding-left: 0;
+  padding-right: 6px;
+}
+
+.team2 {
+  padding-left: 6px;
+  padding-right: 0;
 }
 
 .col-0-5 { /* for scores */
     flex: 0 0 5%;
-    max-width: 40px;
-    min-width: 40px;
-    position: relative;
-    width: 100%;
-}
-
-.col-2-5 { /* for team names */
-    flex: 0 0 18%;
-    max-width: 18%;
+    max-width: 35px;
+    min-width: 35px;
     position: relative;
     width: 100%;
 }
