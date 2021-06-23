@@ -242,7 +242,7 @@ def _display_matches(user):
             'real_score_style': _get_score_style(m.main_score_1, m.main_score_2, ps1, ps2),
             'predicted_score_1': ps1,
             'predicted_score_2': ps2,
-
+            'phase': m.phase,
         })
 
     return infos

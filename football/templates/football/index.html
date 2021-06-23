@@ -38,6 +38,7 @@
   {% endif %}
 
   <h3>Dự đoán của bạn</h3>
+
   <form id="prediction-form" method="post">
     {% csrf_token %}
     <div class="card card-body">
@@ -54,29 +55,32 @@
       </div>
     </div>
     <p></p>
+
+    <div class="alert alert-info">Thời hạn đóng dự đoán cho mỗi trận: <strong>phút thứ 15</strong> kể từ khi trận đấu khởi tranh. <br/>
+      Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.
+    </div>
+
+    <h5>Vòng 16 đội</h5>
+
+      {% for info in infos %}
+        {% if info.phase == "1/8" %}
+          {% include "./match_row.html" %}
+        {% endif %}
+      {% endfor %}
+      <p></p>
+      <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
+      <p></p>
+      
     <h5>Vòng bảng</h5>
 
       <a href="https://www.uefa.com/uefaeuro-2020/standings/">&gt;&gt; Xem thứ hạng các đội</a>
-      <p></p>
-      <p>Thời hạn đóng dự đoán cho mỗi trận: phút thứ 15 kể từ khi trận đấu khởi tranh.</p>
-      <div class="alert alert-info">Gợi ý: Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.</div>
       {% for info in infos %}
-      <div class="row px-1" style="line-height:30px;">
-        <div class="col-12 col-lg-2">{{info.start_time}}</div>
-      	<div class="col-4 col-lg-2 text-right team1">{{info.team_1}}</div>
-        <div class="col-0-5 text-right">
-          <input type=number name="{{info.id}}-1" value="{{info.predicted_score_1}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
-        </div>
-        <div class="col-0-5 text-center {{ info.real_score_style.whole }}">
-          <span class="{{ info.real_score_style.s1 }}">{{info.real_score_1}}</span>-<span class="{{ info.real_score_style.s2 }}">{{info.real_score_2}}</span>
-        </div>
-        <div class="col-0-5 text-center">
-          <input type=number name="{{info.id}}-2" value="{{info.predicted_score_2}}" class="form-control form-control-sm small-input" {% if info.locked %}readonly{% endif %}>
-        </div>
-        <div class="col team2">{{info.team_2}}</div>
-      </div>
+        {% if info.phase == "group" %}
+          {% include "./match_row.html" %}
+        {% endif %}
       {% endfor %}
-    <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
+      <p></p>
+
   </form>
 
   <hr />

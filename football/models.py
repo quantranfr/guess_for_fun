@@ -25,7 +25,7 @@ class Match(models.Model):
         on_delete=models.SET_NULL
     )
     phase = models.CharField(default=None, max_length=200)
-    group = models.CharField(default=None, max_length=200)
+    group = models.CharField(default=None, null=True, blank=True, max_length=200)
     team_1 = models.ForeignKey(
         Team,
         related_name='team_1',
