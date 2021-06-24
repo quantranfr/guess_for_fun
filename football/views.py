@@ -12,7 +12,7 @@ from collections import defaultdict
 
 LOCKED_DELAY = 15*60 # delay after start time in seconds
 
-#@login_required
+
 def index(request):
 
     context = {
@@ -264,6 +264,7 @@ def _display_matches_demo():
             'real_score_2': m.main_score_2 if m.main_score_2 is not None else '?',
             'predicted_score_1': '',
             'predicted_score_2': '',
+            'phase': m.phase,
         })
 
     return infos
