@@ -321,7 +321,8 @@ def _get_score_style(s1, s2, ps1, ps2):
     res = {
         'whole': '',
         's1': '',
-        's2': ''
+        's2': '',
+        'diff': '',
     }
     if s1 is None or s2 is None or ps1 is None or ps2 is None or ps1=='' or ps2=='':
         pass
@@ -332,6 +333,7 @@ def _get_score_style(s1, s2, ps1, ps2):
             res['whole'] = 'text-success'
             if s1==ps1: res['s1'] = 'font-weight-bold'
             if s2==ps2: res['s2'] = 'font-weight-bold'
+            if s1-s2==ps1-ps2: res['diff'] = 'font-weight-bold'
         else:
             res['whole'] = 'text-danger'
     return res
