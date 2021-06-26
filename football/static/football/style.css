@@ -70,3 +70,9 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+/*------------ CHART --------------*/
+.chart {
+  width: 100%;
+  min-height: 450px;
+}

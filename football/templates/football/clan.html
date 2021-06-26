@@ -25,6 +25,12 @@
 
   <hr />
 
+  {% if clan.id == 5 %}
+  {% include "./clan_progression.html" %}
+  <div id="chart_div" class="chart"></div>
+  <hr />
+  {% endif %}
+
   <form action="{% url 'football:index' %}" method="POST">
     {% csrf_token %}
     {% if username_pts_rank|length == 1 %}
