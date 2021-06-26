@@ -19,7 +19,11 @@ sqlite3 $DB "select id from football_clan" | # get clans
       do
         user_id=`echo $line | awk -F '|' '{print $1}'`
       	username=`echo $line | awk -F '|' '{print $2}'`
-        sqlite3 $DB ".param init" ".param set :user_id $user_id" ".param set :clan_id $clan_id" ".read clan_progression.sql" | # 3 columns: match_id, match_score, running_total
+
+        # obtain a csv file with 3 columns: match_id, match_score, running_total
+        # the next line or the line after? it depends on the sqlite version...
+        #sqlite3 $DB ".param init" ".param set :user_id $user_id" ".param set :clan_id $clan_id" ".read clan_progression.sql" |
+        sed "s/user_id_param/$user_id/" clan_progression.sql | sed -e "s/clan_id_param/$clan_id/" | sqlite3 $DB |
           cut -d "|" -f 3 | # get the running_total column
           sed -e "s/running_total/$username/" > tmp_$username
       done

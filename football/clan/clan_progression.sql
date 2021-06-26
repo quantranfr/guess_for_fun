@@ -29,7 +29,7 @@ FROM (
       , p.main_score_2 AS ps2
     from football_match m
     join football_prediction p on m.id = p.match_id
-    where p.user_id in (select user_id from football_user_clan where clan_id=:clan_id)
+    where p.user_id in (select user_id from football_user_clan where clan_id=clan_id_param)
     order by start_time, m.id
   )
 )
@@ -38,4 +38,4 @@ FROM (
 SELECT m.id, s.match_score
   , sum(s.match_score) OVER (ORDER BY m.start_time, m.id) AS running_total
 FROM (SELECT id, start_time FROM football_match ORDER BY start_time) m --get complete list of matches
-LEFT JOIN (SELECT * FROM scores WHERE user_id=:user_id) s on m.id = s.match_id
+LEFT JOIN (SELECT * FROM scores WHERE user_id=user_id_param) s on m.id = s.match_id
