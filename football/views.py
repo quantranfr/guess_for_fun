@@ -100,6 +100,7 @@ def clan(request, clan_id):
 
             graph_js = f"data.addColumn('number', 'Match #');"
             for col in df.columns:
+                df[col] = df[col].cumsum()
                 graph_js += f"data.addColumn('number', '{col}');"
 
             graph_js += "data.addRows(["
