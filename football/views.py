@@ -303,7 +303,7 @@ def _calculate_points_and_rank(users):
             p.match.main_score_1,
             p.match.main_score_2,
             p.main_score_1,
-            p.main_score_2)
+            p.main_score_2)*(1 if p.match.phase=='group' else 2)
 
     # ranking
     lp = [user_pts[u.username] for u in users] # [1, 2, 3, 3, 3, 4, 5]
