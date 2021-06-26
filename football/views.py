@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import Championship, Team, Match, Prediction, Clan, User_Clan, Prediction_Champion
 from datetime import datetime
 import pandas as pd
-import pytz, secrets, os
+import pytz, secrets, os, sys
 import scipy.stats as ss
 from collections import defaultdict
 
@@ -90,7 +90,7 @@ def clan(request, clan_id):
 
     ########## progression graph ###########
     graph_js = ''
-    progression_filename = f'football/clan/clan_progression_{clan_id}.csv'
+    progression_filename = f'{os.path.dirname(os.path.realpath(__file__))}/clan/clan_progression_{clan_id}.csv'
     if os.path.exists(progression_filename):
         df = pd.read_csv(progression_filename)
         df.fillna(0, inplace=True) # running sum will not fill 0 to first null values
