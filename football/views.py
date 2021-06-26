@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import Championship, Team, Match, Prediction, Clan, User_Clan, Prediction_Champion
 from datetime import datetime
 import pandas as pd
-import pytz, secrets
+import pytz, secrets, os
 import scipy.stats as ss
 from collections import defaultdict
 
@@ -89,21 +89,24 @@ def clan(request, clan_id):
     username_pts_rank = _calculate_points_and_rank(users)
 
     ########## progression graph ###########
-    df = pd.read_csv(f'football/clan/clan_progression_{clan_id}.csv')
-    df.fillna(0, inplace=True) # running sum will not fill 0 to first null values
+    graph_js = ''
+    progression_filename = f'football/clan/clan_progression_{clan_id}.csv'
+    if os.path.exists(progression_filename):
+        df = pd.read_csv(progression_filename)
+        df.fillna(0, inplace=True) # running sum will not fill 0 to first null values
 
-    graph_js = f"data.addColumn('number', 'Match #');"
-    for col in df.columns:
-        graph_js += f"data.addColumn('number', '{col}');"
+        graph_js = f"data.addColumn('number', 'Match #');"
+        for col in df.columns:
+            graph_js += f"data.addColumn('number', '{col}');"
 
-    graph_js += "data.addRows(["
-    for i, r in df.iterrows():
-        graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
-    graph_js += "]);"
+        graph_js += "data.addRows(["
+        for i, r in df.iterrows():
+            graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
+        graph_js += "]);"
 
-    nb_past_matches = Match.objects.filter(start_time__lt=datetime.now()).count()
-    graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
-    graph_js += f"options.height = {max(450, len(df.columns)*30)};"
+        nb_past_matches = Match.objects.filter(start_time__lt=datetime.now()).count()
+        graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
+        graph_js += f"options.height = {max(450, len(df.columns)*30)};"
 
     context = {
         'clan': c,
