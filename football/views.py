@@ -93,20 +93,23 @@ def clan(request, clan_id):
     progression_filename = f'{os.path.dirname(os.path.realpath(__file__))}/clan/clan_progression_{clan_id}.csv'
     if os.path.exists(progression_filename):
         df = pd.read_csv(progression_filename)
-        df.fillna(0, inplace=True) # running sum will not fill 0 to first null values
+        if len(df) > 0:
+            df.fillna(0, inplace=True) # running sum will not fill 0 to first null values
+            nb_past_matches = Match.objects.filter(start_time__lt=datetime.now()).count()
+            df = df[:nb_past_matches]
 
-        graph_js = f"data.addColumn('number', 'Match #');"
-        for col in df.columns:
-            graph_js += f"data.addColumn('number', '{col}');"
+            graph_js = f"data.addColumn('number', 'Match #');"
+            for col in df.columns:
+                graph_js += f"data.addColumn('number', '{col}');"
 
-        graph_js += "data.addRows(["
-        for i, r in df.iterrows():
-            graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
-        graph_js += "]);"
+            graph_js += "data.addRows(["
+            for i, r in df.iterrows():
+                graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
+            graph_js += "]);"
 
-        nb_past_matches = Match.objects.filter(start_time__lt=datetime.now()).count()
-        graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
-        graph_js += f"options.height = {max(450, len(df.columns)*30)};"
+
+            graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
+            graph_js += f"options.height = {max(450, len(df.columns)*30)};"
 
     context = {
         'clan': c,
