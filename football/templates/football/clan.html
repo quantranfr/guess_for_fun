@@ -25,11 +25,42 @@
 
   <hr />
 
-  {% if clan.id == 5 %}
-  {% include "./clan_progression.html" %}
+  <h5>Hành trình đua top</h5>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {'packages':['corechart', 'line']});
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      var options = {
+        legend: { position: 'bottom', textStyle: {fontSize: 10}},
+        hAxis: {
+          viewWindow: {max: 36}, // will be overwritten
+          ticks: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
+        }
+      };
+
+      {{ graph_js | safe }}
+
+      var chart = new google.charts.Line(document.getElementById('chart_div'));
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+
+    $(window).resize(function(){
+      drawChart();
+    });
+  </script>
+
   <div id="chart_div" class="chart"></div>
   <hr />
-  {% endif %}
 
   <form action="{% url 'football:index' %}" method="POST">
     {% csrf_token %}

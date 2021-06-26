@@ -87,9 +87,28 @@ def clan(request, clan_id):
     if request.user not in users: return redirect('home')
 
     username_pts_rank = _calculate_points_and_rank(users)
+
+    ########## progression graph ###########
+    df = pd.read_csv(f'football/clan/clan_progression_{clan_id}.csv')
+    df.fillna(0, inplace=True) # running sum will not fill 0 to first null values
+
+    graph_js = f"data.addColumn('number', 'Match #');"
+    for col in df.columns:
+        graph_js += f"data.addColumn('number', '{col}');"
+
+    graph_js += "data.addRows(["
+    for i, r in df.iterrows():
+        graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
+    graph_js += "]);"
+
+    nb_past_matches = Match.objects.filter(start_time__lt=datetime.now()).count()
+    graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
+    graph_js += f"options.height = {max(450, len(df.columns)*30)};"
+
     context = {
         'clan': c,
-        'username_pts_rank': username_pts_rank
+        'username_pts_rank': username_pts_rank,
+        'graph_js': graph_js,
     }
     return render(request, 'football/clan.html', context)
 

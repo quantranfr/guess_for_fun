@@ -13,8 +13,13 @@ Import data before going live:
 - Go to `Teams` and upload `raw_data_euro2021_teams.csv`
 - Go to `Matches` and upload `matches_group_phase.csv`
 
-Credits:
+Datamart:
+
+```
+> crontab -e
+* * * * * /absolute/path/to/clan_progression.sh /absolute/path/to/db.sqlite3 2> /absolute/path/to/log
+```
+
+## Ref
 
 Access management: https://learndjango.com/tutorials/django-login-and-logout-tutorial
-
-Ideas from http://www.31juin.fr
