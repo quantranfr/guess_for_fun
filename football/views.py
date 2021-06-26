@@ -307,7 +307,7 @@ def _calculate_points(user):
             p.match.main_score_1,
             p.match.main_score_2,
             p.main_score_1,
-            p.main_score_2)
+            p.main_score_2)*(1 if p.match.phase=='group' else 2)
     return pts
 
 def _calculate_points_and_rank(users):
