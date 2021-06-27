@@ -29,7 +29,7 @@ def index(request):
 
     if request.method == 'POST':
         if "submit-guesses" in request.POST:
-            predicted_champion_name = request.POST['champion']
+            predicted_champion_name = request.POST['champion'] if 'champion' in request.POST else None
             predicted = {}
             for key in request.POST:
                 if key.endswith('-1'):
