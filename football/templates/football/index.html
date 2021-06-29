@@ -52,7 +52,7 @@
             <option value="{{ t }}" {% if predicted_champion and predicted_champion.name == t.name %}selected{% endif %}>{{ t }}</option>
           {% endfor %}
         </select><br />
-        (được dự đoán đến 23h ngày 26/6)
+        (đã đóng dự đoán)
       </div>
     </div>
     <p></p>
@@ -61,20 +61,15 @@
       Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.
     </div>
 
-    <h5>Vòng 16 đội</h5>
+    <h5>Tứ kết</h5>
 
       {% for info in infos %}
-        {% if info.phase == "1/8" %}
+        {% if info.phase == "1/4" %}
           {% include "./match_row.html" %}
         {% endif %}
       {% endfor %}
       <p></p>
       <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
-      <p></p>
-
-    <h5>Tứ kết</h5>
-
-      {% include "./match_row_QF.html" %}
       <p></p>
 
     <h5>Bán kết</h5>
@@ -85,6 +80,17 @@
     <h5>Chung kết</h5>
 
       {% include "./match_row_F.html" %}
+      <p></p>
+
+    <hr />
+
+    <h5>Vòng 16 đội</h5>
+
+      {% for info in infos %}
+        {% if info.phase == "1/8" %}
+          {% include "./match_row.html" %}
+        {% endif %}
+      {% endfor %}
       <p></p>
 
     <h5>Vòng bảng</h5>
