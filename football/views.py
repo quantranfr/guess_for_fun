@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import Championship, Team, Match, Prediction, Clan, User_Clan, Prediction_Champion
 from datetime import datetime
 import pandas as pd
+import numpy as np
 import pytz, secrets, os, sys
 import scipy.stats as ss
 from collections import defaultdict
@@ -333,7 +334,7 @@ def _get_ranks(sr):
 
     # eg. sr.values are [1, 2, 3, 3, 3, 4, 5]
     ranks = len(sr)+1-ss.rankdata(sr, method='max') # [7, 6, 3, 3, 3, 2, 1]
-    rank_of_users = list(zip(sr.index, sr, ranks))
+    rank_of_users = list(zip(sr.index, sr.astype(int), ranks))
     return sorted(rank_of_users, key=lambda i: i[2])
 
 
