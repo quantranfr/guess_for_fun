@@ -77,7 +77,6 @@ def clan(request, clan_id):
     '''
     Retrieve a dict <username: points>
     '''
-
     c = get_object_or_404(Clan, pk=clan_id)
     users = []
     for _ in User_Clan.objects.filter(clan=c):
@@ -86,9 +85,8 @@ def clan(request, clan_id):
     # prevent manual access to this URL
     if request.user not in users: return redirect('home')
 
-    username_pts_rank = _calculate_points_and_rank(users)
-
-    ########## progression graph ###########
+    ########## read from datamart ###########
+    username_pts_rank = []
     graph_js = ''
     progression_filename = f'{os.path.dirname(os.path.realpath(__file__))}/clan/clan_progression_{clan_id}.csv'
     if os.path.exists(progression_filename):
@@ -98,25 +96,36 @@ def clan(request, clan_id):
             nb_past_matches = Match.objects.filter(start_time__lt=datetime.now()).count()
             df = df[:nb_past_matches]
 
-            graph_js = f"data.addColumn('number', 'Match #');"
-            for col in df.columns:
-                df[col] = df[col].cumsum()
-                graph_js += f"data.addColumn('number', '{col}');"
+            if len(df)>0:
 
-            graph_js += "data.addRows(["
-            for i, r in df.iterrows():
-                graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
-            graph_js += "]);"
+                # get cumulated points
+                for col in df.columns:
+                    df[col] = df[col].cumsum()
 
+                # point summary and ranking
+                username_pts_rank = _get_ranks(df.iloc[-1])
 
-            graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
-            graph_js += f"options.height = {max(450, len(df.columns)*30)};"
+                # progression graph
+                graph_js = f"data.addColumn('number', 'Match #');"
+                for col in df.columns:
+                    graph_js += f"data.addColumn('number', '{col}');"
+
+                graph_js += "data.addRows(["
+                for i, r in df.iterrows():
+                    graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
+                graph_js += "]);"
+
+                graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
+                graph_js += f"options.vAxis.viewWindow.min = {df.iloc[-1].min()-10};"
+                graph_js += f"options.height = {max(450, len(df.columns)*30)};"
+
 
     context = {
         'clan': c,
         'username_pts_rank': username_pts_rank,
         'graph_js': graph_js,
     }
+
     return render(request, 'football/clan.html', context)
 
 @permission_required('is_superuser')
@@ -310,33 +319,23 @@ def _calculate_points(user):
             p.main_score_2)*(1 if p.match.phase=='group' else 2)
     return pts
 
-def _calculate_points_and_rank(users):
+
+def _get_ranks(sr):
     '''
     Get points for many users at the same time. TODO: championship matters...
 
     Suppose users' points for a clan is [1, 2, 3, 3, 3, 4, 5]
     The ranking should be               [7, 6, 3, 3, 3, 2, 1]
 
+    Input: sr is a named series
     Return: [(username, pts, rank)], ordered by rank
     '''
 
-    user_pts = defaultdict(int) # <username: pts>
-    for p in Prediction.objects.all():
-        if p.match.main_score_1 is None: continue
-        if p.user not in users: continue
-        if p.user.username not in user_pts: user_pts[p.user.username]=0
-        user_pts[p.user.username] += _check_scoring_policy(
-            p.match.main_score_1,
-            p.match.main_score_2,
-            p.main_score_1,
-            p.main_score_2)*(1 if p.match.phase=='group' else 2)
+    # eg. sr.values are [1, 2, 3, 3, 3, 4, 5]
+    ranks = len(sr)+1-ss.rankdata(sr, method='max') # [7, 6, 3, 3, 3, 2, 1]
+    rank_of_users = list(zip(sr.index, sr, ranks))
+    return sorted(rank_of_users, key=lambda i: i[2])
 
-    # ranking
-    lp = [user_pts[u.username] for u in users] # [1, 2, 3, 3, 3, 4, 5]
-    ranks = len(lp)+1-ss.rankdata(lp, method='max') # [7, 6, 3, 3, 3, 2, 1]
-    rank_of_points = dict(zip(lp, ranks)) # {1:7, 2:6,...}
-    res = [(u.username, user_pts[u.username], rank_of_points[user_pts[u.username]]) for u in users] # [(rank, username, pts)]
-    return sorted(res, key=lambda i:i[2]) # sorted by rank
 
 def _get_score_style(s1, s2, ps1, ps2):
     '''

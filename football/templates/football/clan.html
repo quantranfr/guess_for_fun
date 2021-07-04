@@ -42,13 +42,13 @@
       var data = new google.visualization.DataTable();
       var options = {
         legend: { position: 'bottom', textStyle: {fontSize: 10}},
-        hAxis: {
-          viewWindow: {max: 36}, // will be overwritten
-          ticks: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180],
-        }
+        hAxis: {viewWindow: {}}, // will be overwritten
+        vAxis: {viewWindow: {}}
       };
 
       {{ graph_js | safe }}
+
+      options.hAxis.viewWindow.min = options.hAxis.viewWindow.max - Math.floor(window.innerWidth/100)*2;
 
       var chart = new google.charts.Line(document.getElementById('chart_div'));
       chart.draw(data, google.charts.Line.convertOptions(options));
