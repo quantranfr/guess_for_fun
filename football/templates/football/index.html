@@ -61,6 +61,19 @@
       Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.
     </div>
 
+    <h5>Chung kết</h5>
+
+      {% for info in infos %}
+        {% if info.phase == "1" %}
+          {% include "./match_row.html" %}
+        {% endif %}
+      {% endfor %}
+      <p></p>
+      <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
+      <p></p>
+
+    <hr />
+
     <h5>Bán kết</h5>
 
       {% for info in infos %}
@@ -69,15 +82,6 @@
         {% endif %}
       {% endfor %}
       <p></p>
-      <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
-      <p></p>
-
-    <h5>Chung kết</h5>
-
-      {% include "./match_row_F.html" %}
-      <p></p>
-
-    <hr />
 
     <h5>Tứ kết</h5>
 
