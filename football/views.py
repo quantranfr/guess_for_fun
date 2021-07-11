@@ -104,7 +104,7 @@ def clan(request, clan_id):
                     df[col] = df[col].cumsum()
 
                 # point summary and ranking
-                username_pts_rank = _get_ranks(df.iloc[-1])
+                #username_pts_rank = _get_ranks(df.iloc[-1]) # # to be commented for bonus points after the final match only
 
                 # progression graph
                 graph_js = f"data.addColumn('number', 'Match #');"
@@ -120,6 +120,11 @@ def clan(request, clan_id):
                 graph_js += f"options.vAxis.viewWindow.min = {df.iloc[-1].min()-10};"
                 graph_js += f"options.height = {max(450, len(df.columns)*30)};"
 
+    # for bonus points after the final match only
+    final_points = {}
+    for user in users:
+        final_points[user] = _calculate_points(user)
+    username_pts_rank = _get_ranks(pd.Series(final_points))
 
     context = {
         'clan': c,
@@ -322,6 +327,7 @@ def _calculate_points(user):
         score = base_score*(1 if p.match.phase=='group' else 2)
 
         if p.match.phase=='1':
+            print('here')
             championship = Championship.objects.all()[0] # TODO: championship matters
             pc = Prediction_Champion.objects.filter(user=user, championship=championship)
             if pc:
