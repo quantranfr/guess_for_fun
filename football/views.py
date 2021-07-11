@@ -123,7 +123,7 @@ def clan(request, clan_id):
     # for bonus points after the final match only
     final_points = {}
     for user in users:
-        final_points[user] = _calculate_points(user)
+        final_points[user.username] = _calculate_points(user)
     username_pts_rank = _get_ranks(pd.Series(final_points))
 
     context = {
@@ -327,7 +327,6 @@ def _calculate_points(user):
         score = base_score*(1 if p.match.phase=='group' else 2)
 
         if p.match.phase=='1':
-            print('here')
             championship = Championship.objects.all()[0] # TODO: championship matters
             pc = Prediction_Champion.objects.filter(user=user, championship=championship)
             if pc:
