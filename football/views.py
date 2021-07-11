@@ -313,11 +313,23 @@ def _calculate_points(user):
     pts = 0
     for p in Prediction.objects.filter(user=user):
         if p.match.main_score_1 is None: continue
-        pts += _check_scoring_policy(
+        base_score = _check_scoring_policy(
             p.match.main_score_1,
             p.match.main_score_2,
             p.main_score_1,
-            p.main_score_2)*(1 if p.match.phase=='group' else 2)
+            p.main_score_2)
+
+        score = base_score*(1 if p.match.phase=='group' else 2)
+
+        if p.match.phase=='1':
+            championship = Championship.objects.all()[0] # TODO: championship matters
+            pc = Prediction_Champion.objects.filter(user=user, championship=championship)
+            if pc:
+                champion = p.match.team_1 if p.match.main_score_1+p.match.penalty_score_1 > p.match.main_score_2+p.match.penalty_score_2 else p.match.team_2
+                if champion == pc[0].team:
+                    score += 50
+
+        pts += score
     return pts
 
 
