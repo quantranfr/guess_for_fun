@@ -21,9 +21,11 @@ FROM (
       , p.main_score_1 AS ps1
       , p.main_score_2 AS ps2
     from football_match m
+    join football_championship c on m.championship_id = c.id
     left join (
       select * from football_prediction where user_id=user_id_param
     ) p on m.id = p.match_id
+    where c.name = 'World Cup 2022'
     order by start_time, m.id
   )
 );

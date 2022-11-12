@@ -1,0 +1,49 @@
+﻿UTC_diff,phase,group,start_time,team_1,team_2
+0,group,A,20-11-2022 16:00,Qatar,Ecuador
+0,group,B,21-11-2022 13:00,England,Iran
+0,group,A,21-11-2022 16:00,Senegal,Holland
+0,group,B,21-11-2022 19:00,USA,Wales
+0,group,C,22-11-2022 10:00,Argentina,Saudi Arabia
+0,group,D,22-11-2022 13:00,Denmark,Tunisia
+0,group,C,22-11-2022 16:00,Mexico,Poland
+0,group,D,22-11-2022 19:00,France,Australia
+0,group,F,23-11-2022 10:00,Morocco,Croatia
+0,group,E,23-11-2022 13:00,Germany,Japan
+0,group,E,23-11-2022 16:00,Spain,Costa Rica
+0,group,F,23-11-2022 19:00,Belgium,Canada
+0,group,G,24-11-2022 10:00,Switzld.,Cameroon
+0,group,H,24-11-2022 13:00,Uruguay,South Korea
+0,group,H,24-11-2022 16:00,Portugal,Ghana
+0,group,G,24-11-2022 19:00,Brazil,Serbia
+0,group,B,25-11-2022 10:00,Wales,Iran
+0,group,A,25-11-2022 13:00,Qatar,Senegal
+0,group,A,25-11-2022 16:00,Holland,Ecuador
+0,group,B,25-11-2022 19:00,England,USA
+0,group,D,26-11-2022 10:00,Tunisia,Australia
+0,group,C,26-11-2022 13:00,Poland,Saudi Arabia
+0,group,D,26-11-2022 16:00,France,Denmark
+0,group,C,26-11-2022 19:00,Argentina,Mexico
+0,group,E,27-11-2022 10:00,Japan,Costa Rica
+0,group,F,27-11-2022 13:00,Belgium,Morocco
+0,group,F,27-11-2022 16:00,Croatia,Canada
+0,group,E,27-11-2022 19:00,Spain,Germany
+0,group,G,28-11-2022 10:00,Cameroon,Serbia
+0,group,H,28-11-2022 13:00,South Korea,Ghana
+0,group,G,28-11-2022 16:00,Brazil,Switzld.
+0,group,H,28-11-2022 19:00,Portugal,Uruguay
+0,group,A,29-11-2022 15:00,Ecuador,Senegal
+0,group,A,29-11-2022 15:00,Holland,Qatar
+0,group,B,29-11-2022 19:00,Wales,England
+0,group,B,29-11-2022 19:00,Iran,USA
+0,group,D,30-11-2022 15:00,Australia,Denmark
+0,group,D,30-11-2022 15:00,Tunisia,France
+0,group,C,30-11-2022 19:00,Poland,Argentina
+0,group,C,30-11-2022 19:00,Saudi Arabia,Mexico
+0,group,F,01-12-2022 15:00,Croatia,Belgium
+0,group,F,01-12-2022 15:00,Canada,Morocco
+0,group,E,01-12-2022 19:00,Japan,Spain
+0,group,E,01-12-2022 19:00,Costa Rica,Germany
+0,group,H,02-12-2022 15:00,Ghana,Uruguay
+0,group,H,02-12-2022 15:00,South Korea,Portugal
+0,group,G,02-12-2022 19:00,Serbia,Switzld.
+0,group,G,02-12-2022 19:00,Cameroon,Brazil

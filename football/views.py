@@ -6,13 +6,12 @@ from django.contrib.auth.models import User
 from .models import Championship, Team, Match, Prediction, Clan, User_Clan, Prediction_Champion
 from datetime import datetime
 import pandas as pd
-import numpy as np
-import pytz, secrets, os, sys
+import pytz, secrets, os
 import scipy.stats as ss
-from collections import defaultdict
 
 LOCKED_DELAY = 15*60 # delay after start time in seconds
-
+CURRENT_CHAMPIONSHIP = "World Cup 2022"
+CURRENT_CHAMPION = None
 
 def index(request):
 
@@ -20,6 +19,8 @@ def index(request):
         'user': request.user,
         'teams': Team.objects.all()
     }
+
+    championship = Championship.objects.filter(name=CURRENT_CHAMPIONSHIP)[0]
 
     #---------- demo to anonymous user -----------
     if not request.user.is_authenticated:
@@ -35,7 +36,10 @@ def index(request):
             for key in request.POST:
                 if key.endswith('-1'):
                     match_id = key.rstrip('1').rstrip('-')
-                    predicted[match_id] = (request.POST[key], request.POST[match_id+'-2'])
+                    ps1 = request.POST[key]
+                    ps2 = request.POST[match_id+'-2']
+                    if ps1 and ps2:
+                        predicted[match_id] = (ps1, ps2)
             context['submit_guesses_feedback'] = _submit_guesses(request.user, predicted, predicted_champion_name)
         elif "submit-join-clan" in request.POST:
             clan_name = request.POST['clan-name-join']
@@ -59,13 +63,13 @@ def index(request):
     context['points'] = _calculate_points(request.user)
 
     # display user's clans
-    uclans = User_Clan.objects.filter(user=request.user)
+    uclans = User_Clan.objects.filter(user=request.user, clan__status=True)
     if uclans:
         context['uclans'] = uclans
 
     # display the predicted champion (if any)
-    predicted_champion = Prediction_Champion.objects.filter(user=request.user)
-    if predicted_champion:
+    predicted_champion = Prediction_Champion.objects.filter(user=request.user, championship=championship)
+    if len(predicted_champion):
         context['predicted_champion'] = predicted_champion[0].team
 
     # display matches and user's predictions
@@ -104,27 +108,27 @@ def clan(request, clan_id):
                     df[col] = df[col].cumsum()
 
                 # point summary and ranking
-                #username_pts_rank = _get_ranks(df.iloc[-1]) # # to be commented for bonus points after the final match only
+                username_pts_rank = _get_ranks(df.iloc[-1]) # TODO: to be commented for bonus points after the final match only
 
-                # progression graph
-                graph_js = f"data.addColumn('number', 'Match #');"
-                for col in df.columns:
-                    graph_js += f"data.addColumn('number', '{col}');"
+                # progression graph - comment đến khi có nhiều nhiều data
+                # graph_js = f"data.addColumn('number', 'Match #');"
+                # for col in df.columns:
+                #     graph_js += f"data.addColumn('number', '{col}');"
 
-                graph_js += "data.addRows(["
-                for i, r in df.iterrows():
-                    graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
-                graph_js += "]);"
+                # graph_js += "data.addRows(["
+                # for i, r in df.iterrows():
+                #     graph_js += f"[{i+1}, {', '.join(map(lambda x: str(x), r.values))}],"
+                # graph_js += "]);"
 
-                graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
-                graph_js += f"options.vAxis.viewWindow.min = {df.iloc[-1].min()-10};"
-                graph_js += f"options.height = {max(450, len(df.columns)*30)};"
+                # graph_js += f"options.hAxis.viewWindow.max = {nb_past_matches};"
+                # graph_js += f"options.vAxis.viewWindow.min = {df.iloc[-1].min()-10};"
+                # graph_js += f"options.height = {max(450, len(df.columns)*30)};"
 
-    # for bonus points after the final match only
-    final_points = {}
-    for user in users:
-        final_points[user.username] = _calculate_points(user)
-    username_pts_rank = _get_ranks(pd.Series(final_points))
+    # TODO: uncomment to count bonus points after the final match
+    # final_points = {}
+    # for user in users:
+    #     final_points[user.username] = _calculate_points(user)
+    # username_pts_rank = _get_ranks(pd.Series(final_points))
 
     context = {
         'clan': c,
@@ -140,20 +144,20 @@ def add_teams(request):
     Let users upload a file containing team info.
     Create only.
     Format: csv
-    Separator: ';'
+    Separator: ','
     Columns: 'name' (eg. France), 'abbr' (eg. FRA)
     '''
 
     template = "football/add_teams.html"
     context = {
-        'instruction': "Accept ';' separated csv file.\
+        'instruction': "Accept ',' separated csv file.\
             Contains two columns 'name' and 'abbr' with header."
     }
     if request.method=='GET':
         return render(request, template, context)
 
     file = request.FILES['file']
-    df = pd.read_csv(file, sep=';')
+    df = pd.read_csv(file)
     res = '<pre>'
     for index, row in df.iterrows():
         name=row['name']
@@ -179,7 +183,7 @@ def add_matches(request):
     Convert match time to UTC+UTC_DIFF_DEFAULT to store in the db.
     Create only.
     Format: csv
-    Separator: ';'
+    Separator: ','
     Columns: UTC_diff (eg.2);phase (eg.group);group (eg.A);start_time (eg.11-06-2021 21:00);team_1 (eg.France);team_2 (eg.Italy)
     '''
 
@@ -188,8 +192,8 @@ def add_matches(request):
     context = {
         'default_championship': '' if len(championships) else 'default_' + str(int(datetime.now().timestamp())),
         'championships': championships,
-        'instruction': "Accept ';' separated csv file. \
-            Columns are UTC_diff (eg.2), phase (eg.group), group (eg.A), start_time (eg.11-06-2021 21:00), team_1 (eg.France), team_2 (eg.Italy).\
+        'instruction': "Accept ',' separated csv file. \
+            Columns are UTC_diff (eg.2), phase (eg.group), group (eg.A), start_time (eg.13-06-2021 21:00), team_1 (eg.France), team_2 (eg.Italy).\
             Order doesn't matter."
     }
     if request.method=='GET':
@@ -201,12 +205,10 @@ def add_matches(request):
     else:
         c = Championship.objects.filter(name=request.POST['dropdown_championship'])[0]
     file = request.FILES['file']
-    df = pd.read_csv(file, sep=';')
-    df['status'] = pd.Series()
+    df = pd.read_csv(file)
     res = '<pre>'
 
     for index, row in df.iterrows():
-
         # a lot of effort here to check if a match already exists:
         # - same 2 teams
         # - same match time with accounting for time zone
@@ -268,7 +270,8 @@ def _display_matches(user):
 
     infos = []
     pu = Prediction.objects.filter(user=user)
-    for m in Match.objects.order_by('start_time'):
+    championship = Championship.objects.filter(name=CURRENT_CHAMPIONSHIP)[0]
+    for m in Match.objects.filter(championship=championship).order_by('start_time'):
         p = pu.filter(match=m)
         ps1 = p[0].main_score_1 if p else ''
         ps2 = p[0].main_score_2 if p else ''
@@ -294,7 +297,8 @@ def _display_matches_demo():
     '''
 
     infos = []
-    for m in Match.objects.order_by('start_time'):
+    championship = Championship.objects.filter(name=CURRENT_CHAMPIONSHIP)[0]
+    for m in Match.objects.filter(championship=championship).order_by('start_time'):
         infos.append({
             'id': m.id,
             'start_time': _display_time(m),
@@ -315,8 +319,10 @@ def _calculate_points(user):
     Get one's points. TODO: championship matters...
     '''
 
+    championship = Championship.objects.filter(name=CURRENT_CHAMPIONSHIP)[0]
     pts = 0
     for p in Prediction.objects.filter(user=user):
+        if p.match.championship != championship: continue
         if p.match.main_score_1 is None: continue
         base_score = _check_scoring_policy(
             p.match.main_score_1,
@@ -327,11 +333,9 @@ def _calculate_points(user):
         score = base_score*(1 if p.match.phase=='group' else 2)
         pts += score
 
-
-    championship = Championship.objects.all()[0] # TODO: championship matters
     pc = Prediction_Champion.objects.filter(user=user, championship=championship)
     if pc:
-        if pc[0].team.name == 'Italy':
+        if pc[0].team.name == CURRENT_CHAMPION:
             pts += 50
     return pts
 
@@ -415,8 +419,8 @@ def _submit_guesses(user, predicted, predicted_champion_name):
     OUT: Out: a message and the corresponding bootstrap class
     '''
 
+    championship = Championship.objects.filter(name=CURRENT_CHAMPIONSHIP)[0]
     if predicted_champion_name:
-        championship = Championship.objects.all()[0] # TODO: championship matters
         team = Team.objects.filter(name=predicted_champion_name)[0]
         pc = Prediction_Champion.objects.filter(user=user, championship=championship)
         if pc:
@@ -446,9 +450,8 @@ def _submit_guesses(user, predicted, predicted_champion_name):
                 main_score_2=main_score_2,
             )
             prediction.save()
-    nb_predicted = Prediction.objects.filter(user=user).count()
-    nb_all = Match.objects.count()
-    return f'Bạn đã đoán {nb_predicted}/{nb_all} trận.', 'alert-success'
+    nb_all = Match.objects.filter(championship=championship).count()
+    return f'Bạn đã đoán {len(predicted)}/{nb_all} trận vòng bảng.', 'alert-success' # TODO: change to "tính tới vòng này"
 
 def _submit_join_clan(user, clan_name, access_code):
     '''

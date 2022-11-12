@@ -25,7 +25,7 @@
   {% endfor %}
 
   <hr />
-
+<!-- TODO: comment cho đến khi có nhiều nhiều dữ liệu
   <h5>Hành trình đua top (KHÔNG TÍNH 50 ĐIỂM ĐOÁN ĐÚNG ĐỘI VÔ ĐỊCH)</h5>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -62,7 +62,7 @@
 
   <div id="chart_div" class="chart"></div>
   <hr />
-
+-->
   <form action="{% url 'football:index' %}" method="POST">
     {% csrf_token %}
     {% if username_pts_rank|length == 1 %}

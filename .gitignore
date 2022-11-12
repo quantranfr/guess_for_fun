@@ -3,3 +3,5 @@ db.sqlite3
 migrations
 *.swp
 clan_progression_*
+venv
+.DS_Store

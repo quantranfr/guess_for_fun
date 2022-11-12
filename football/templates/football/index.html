@@ -44,7 +44,7 @@
     <div class="card card-body">
       <h5 class="card-title">Đội vô địch</h5>
       <div class="card-text">
-        <select name="champion" disabled>
+        <select name="champion">
           {% if not predicted_champion %}
             <option value="">Chưa dự đoán</option>
           {% endif %}
@@ -52,7 +52,6 @@
             <option value="{{ t }}" {% if predicted_champion and predicted_champion.name == t.name %}selected{% endif %}>{{ t }}</option>
           {% endfor %}
         </select><br />
-        (đã đóng dự đoán)
       </div>
     </div>
     <p></p>
@@ -61,6 +60,11 @@
       Nhớ xem những phút đầu của trận đấu để dự đoán của bạn chính xác hơn.
     </div>
 
+    <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
+    <p></p>
+
+    <hr />
+<!-- TODO
     <h5>Chung kết</h5>
 
       {% for info in infos %}
@@ -69,10 +73,6 @@
         {% endif %}
       {% endfor %}
       <p></p>
-      <input type="submit" name="submit-guesses" value="Lưu dự đoán" class="btn btn-primary">
-      <p></p>
-
-    <hr />
 
     <h5>Bán kết</h5>
 
@@ -100,10 +100,10 @@
         {% endif %}
       {% endfor %}
       <p></p>
-
+-->
     <h5>Vòng bảng</h5>
 
-      <a href="https://www.uefa.com/uefaeuro-2020/standings/">&gt;&gt; Xem thứ hạng các đội</a>
+      <a href="https://www.fifa.com/fifaplus/en/tournaments/mens/worldcup/qatar2022/scores-fixtures">&gt;&gt; Xem điểm số và thứ hạng chính thức các đội</a>
       {% for info in infos %}
         {% if info.phase == "group" %}
           {% include "./match_row.html" %}
