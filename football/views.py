@@ -451,7 +451,7 @@ def _submit_guesses(user, predicted, predicted_champion_name):
             )
             prediction.save()
     nb_all = Match.objects.filter(championship=championship).count()
-    return f'Bạn đã đoán {len(predicted)}/{nb_all} trận vòng bảng.', 'alert-success' # TODO: change to "tính tới vòng này"
+    return f'Bạn đã đoán {len(predicted)}/{nb_all} trận tính tới vòng này.', 'alert-success'
 
 def _submit_join_clan(user, clan_name, access_code):
     '''
